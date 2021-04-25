@@ -1,0 +1,26 @@
+﻿
+int maximum(int x, int y) {
+        // This will compare 2 numbers
+        if (x > y)
+            return x;
+        else {
+            return y;
+        }
+    }
+    '\n'wha4tif5(a<b;-10++373, 	if'a'==<<"54"! // comments
+  '\n'10wha#tif(a<b;-10++3&73,if'a'=< testingalongstring
+  whileif(a<b,-10.x7z+AbC{10/-11if}
+
+,/><()* +   -=<==,-=!=Test*   Another345   (345)   
+and or, andor, orand test this
+
+// Test push
+    int nums[] = {0, 1, 2};
+    // Test pop
+    for (int i = 0; i < 6; ++i) {
+        d.pop_back();
+        d.pop_front();
+    }
+	
+	
+	

@@ -1,0 +1,335 @@
+﻿class funcClass
+{
+	public int f(int x, int y)
+	{
+		int z = x + y;			
+		cout << '\n';
+		cout << z;		
+		cout << '\n';
+		cout << 'R';			
+		cout << 'E';			
+		cout << 'T';			
+		cout << 'U';			
+		cout << 'R';					
+		cout << 'N';	
+		cout << '\n';
+		return z;
+	}
+}
+
+class ValueClass
+{
+	public int x;
+	public int y;
+	private int z = 1;
+	
+	ValueClass(int xIn, int yIn)
+	{
+		x = xIn;
+		y = yIn;		
+	}
+
+	public void f()
+	{
+		cout << '\n';
+		cout << x;		
+		cout << '\n';
+		cout << y;		
+		cout << '\n';
+		cout << z;		
+	}
+
+}
+
+void kxi2021 main()
+{
+	int x = 0;
+	char xChar;
+	int y = 60;
+	funcClass func;
+	ValueClass v;
+
+	x = (x + 3 + y + y) / (4*2); // This should make x 15
+
+	cout << x;
+	cout << '\n';
+	cout << y;	
+	cout << '\n';
+	cout << '8';
+
+	// Comparison Checks
+
+	// GREATER THAN
+
+	if(x > 10) // this should spit out true
+	{
+		cout << '\n';
+		cout << 't';
+	}
+	else
+	{
+		cout << '\n';
+		cout << 'f';
+	}
+
+	if(x > 20) // this should spit out false
+	{
+		cout << '\n';
+		cout << 't';
+	}
+	else
+	{
+		cout << '\n';
+		cout << 'f';
+	}
+
+	// LESS THAN
+	
+	if(x < 10) // this should spit out false
+	{
+		cout << '\n';
+		cout << 't';
+	}
+	else
+	{
+		cout << '\n';
+		cout << 'f';
+	}
+
+	if(x < 20) // this should spit out true
+	{
+		cout << '\n';
+		cout << 't';
+	}
+	else
+	{
+		cout << '\n';
+		cout << 'f';
+	}
+
+	// EQUAL TO
+
+	if(x == 15) // this should spit out true
+	{
+		cout << '\n';
+		cout << 't';
+	}
+	else
+	{
+		cout << '\n';
+		cout << 'f';
+	}
+
+	if(x == 20) // this should spit out false
+	{
+		cout << '\n';
+		cout << 't';
+	}
+	else
+	{
+		cout << '\n';
+		cout << 'f';
+	}
+
+	// NOT EQUAL TO
+
+	if(x != 15) // this should spit out false (X is 15)
+	{
+		cout << '\n';
+		cout << 't';
+	}
+	else
+	{
+		cout << '\n';
+		cout << 'f';
+	}
+
+	if(x != 20) // this should spit out true
+	{
+		cout << '\n';
+		cout << 't';
+	}
+	else
+	{
+		cout << '\n';
+		cout << 'f';
+	}
+
+	
+	// GREATER THAN OR EQUAL TO
+
+	if(x >= 15) // this should spit out true
+	{
+		cout << '\n';
+		cout << 't';
+	}
+	else
+	{
+		cout << '\n';
+		cout << 'f';
+	}
+
+		if(x >= 10) // this should spit out true
+	{
+		cout << '\n';
+		cout << 't';
+	}
+	else
+	{
+		cout << '\n';
+		cout << 'f';
+	}
+
+	if(x >= 20) // this should spit out false
+	{
+		cout << '\n';
+		cout << 't';
+	}
+	else
+	{
+		cout << '\n';
+		cout << 'f';
+	}
+
+	// LESS THAN OR EQUAL TO
+
+	if(x <= 15) // this should spit out true
+	{
+		cout << '\n';
+		cout << 't';
+	}
+	else
+	{
+		cout << '\n';
+		cout << 'f';
+	}
+
+	if(x <= 10) // this should spit out false
+	{
+		cout << '\n';
+		cout << 't';
+	}
+	else
+	{
+		cout << '\n';
+		cout << 'f';
+	}
+
+	if(x <= 20) // this should spit out true
+	{
+		cout << '\n';
+		cout << 't';
+	}
+	else
+	{
+		cout << '\n';
+		cout << 'f';
+	}
+		cout << '\n';
+	cout << 'W';
+	cout << 'h';
+	cout << 'i';
+	cout << 'l';
+	cout << 'e';	
+
+	x = 0;
+
+	while(x < 9)
+	{
+		cout << ' ';
+		x = x + 1;
+		cout << x;
+		
+		cout << ' ';
+	}
+
+	cout << '\n';
+	cout << 'A';
+	cout << 'n';
+	cout << 'd';
+	cout << ' ';
+	cout << 'o';	
+	cout << 'r';
+	cout << '\n';
+
+	cout << x;
+	
+	if(x < 20 or x > 100) // this should spit out true
+	{
+		cout << '\n';
+		cout << 't';
+	}
+	else
+	{
+		cout << '\n';
+		cout << 'f';
+	}
+
+	if(x > 5 and x < 100) // this should spit out true
+	{
+		cout << '\n';
+		cout << 't';
+	}
+	else
+	{
+		cout << '\n';
+		cout << 'f';
+	}
+
+	// cin
+	
+	// cin >> x; // Uncomment to verify, Comment to prevent input request in testing
+	cout << '\n';
+	cout << x;
+
+	// cin >> xChar; // Uncomment to verify, Comment to prevent input request in testing
+	cout << '\n';
+	cout << xChar;
+	
+	x = 1;
+	y = 2;
+
+	cout << '\n';
+	cout << x;
+	cout << '\n';
+	cout << y;
+
+	cout << '\n';	
+	cout << '\n';
+	cout << 'F';
+	cout << 'u';
+	cout << 'n';
+	cout << 'c';
+	cout << '\n';
+
+
+	x = func.f(x,y);
+
+	cout << x;
+
+	cout << '\n';	
+	cout << '\n';
+	cout << 'F';
+	cout << 'u';
+	cout << 'n';
+	cout << 'c';	
+	cout << 2;
+	cout << '\n';
+
+	cout << '\n';	
+	cout << 'C';
+	cout << 'l';
+	cout << 'a';
+	cout << 's';
+	cout << 's';
+	cout << '\n';
+
+	v = new ValueClass(3,2);
+	v.f();
+	cout << x;
+	cout << '\n';
+	x = v.y;
+	cout << x;
+	cout << '\n';
+
+}

@@ -1,0 +1,85 @@
+﻿class funcClass
+{
+	public int f(int x)
+	{	
+		if(x == 1)
+		{
+			return x;
+		}
+		else
+		{		
+			return x * this.f(x - 1);
+		}
+	}
+}
+
+class funcClass2
+{
+	public int f(int x)
+	{	
+		if(x == 1)
+		{
+			return x;
+		}
+		else
+		{		
+			return x * f(x - 1);
+		}
+	}
+}
+
+
+void kxi2021 main()
+{
+	int x = 7;
+	funcClass func;	
+	funcClass2 func2;
+
+	cout << '\n';	
+	cout << 'F';
+	cout << 'a';
+	cout << 'c';
+	cout << 't';	
+	cout << 'o';
+	cout << 'r';
+	cout << 'i';	
+	cout << 'a';
+	cout << 'l';
+	cout << ' ';	
+	cout << 'o';
+	cout << 'f';
+	cout << ' ';	
+	cout << x;
+
+	cout << '\n';
+
+	x = func.f(x);
+
+	cout << x;
+	cout << '\n';
+
+	x = 10;
+
+	cout << '\n';	
+	cout << 'F';
+	cout << 'a';
+	cout << 'c';
+	cout << 't';	
+	cout << 'o';
+	cout << 'r';
+	cout << 'i';	
+	cout << 'a';
+	cout << 'l';
+	cout << ' ';	
+	cout << 'o';
+	cout << 'f';
+	cout << ' ';	
+	cout << x;
+
+	cout << '\n';
+
+	x = func2.f(x);
+
+	cout << x;
+	cout << '\n';
+}

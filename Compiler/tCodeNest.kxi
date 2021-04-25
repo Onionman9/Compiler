@@ -1,0 +1,114 @@
+﻿class funcClass
+{
+	public int f(int x, int y)
+	{	
+	    int z = 0; 
+		cout << '\n';	
+		cout << 'N';
+		cout << 'e';
+		cout << 's';
+		cout << 't';
+		cout << '\n';
+
+		z = x + g(x,y);		
+
+		cout << '\n';	
+		cout << 'E';
+		cout << 'n';
+		cout << 'd';
+		cout << '\n';
+
+		return z;
+	}
+
+	public int g(int x, int y)
+	{
+		int z = 0;
+		cout << '\n';	
+		cout << 'N';
+		cout << 'e';
+		cout << 's';
+		cout << 't';		
+		cout << 'G';
+		cout << '\n';
+		z = x + y;
+		cout << z;
+		return z;
+	}
+}
+
+class ValueClass
+{
+	public int x;
+	public int y;
+	private int z = 1;
+	
+	ValueClass(int xIn, int yIn)
+	{
+		x = xIn;
+		y = yIn;
+	}
+
+	public void f()
+	{
+		cout << '\n';
+		cout << x;		
+		cout << '\n';
+		cout << y;		
+		cout << '\n';
+		cout << z;		
+	}
+
+}
+
+void kxi2021 main()
+{
+	int x = 0;
+	char xChar;
+	int y = 60;
+	funcClass func;
+	ValueClass v;
+	
+	x = 1;
+	y = 2;
+
+	cout << '\n';	
+	cout << 'C';
+	cout << 'a';
+	cout << 'l';
+	cout << 'l';	
+	cout << ' ';
+	cout << '1';
+	cout << '\n';
+
+	x = func.f(x,y);
+
+	cout << x;
+	cout << '\n';
+
+	x = 3;
+	y = 4;
+
+	cout << '\n';	
+	cout << 'C';
+	cout << 'a';
+	cout << 'l';
+	cout << 'l';	
+	cout << ' ';
+	cout << '2';
+	cout << '\n';
+
+	x = func.f(x,y);
+
+
+	cout << x;
+
+	cout << '\n';	
+	cout << 'N';
+	cout << 'e';
+	cout << 'w';
+	cout << '\n';
+
+
+
+}

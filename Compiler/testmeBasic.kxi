@@ -1,0 +1,126 @@
+﻿class EmptyTestClass
+{
+
+}
+
+class VarClass
+{
+	public int x;
+	public int[] xArr;
+	private int y;
+	public int z;
+	private bool b;
+	public char c;
+	private sym t;
+}
+
+class MultiClass
+{
+	public int x;
+	private int y;
+	public int z;
+	private bool b;
+	public char c;
+	private sym t;
+
+	public void printSum(int inX, int inY, int inZ)
+	{
+		int total = inX + inY + inZ;
+		cout << 'S' + 'u' + 'm' + '\t' + total;
+	}
+}
+
+class ConstructorClass
+{
+	ConstructorClass()
+	{
+	
+	}
+}
+
+class ConstructorClassTwo
+{
+	private int x;
+	private int y;
+
+	ConstructorClass(int xIn, int yIn)
+	{
+		x = xIn;
+		y = yIn;
+	}
+}
+
+void kxi2021 main()
+{
+	int x = 0;
+	bool y = false;
+	char x1;
+	int x1 = x.ToInt128();
+	int x1 = x.ToInt128(noNull, squared);
+	switch(stringIn)
+	{
+		case 'a': 
+		{
+			(x+y);
+			break;
+		} 
+		case 1:
+		{
+			if(true)
+			{		
+			}
+			else
+			{
+				y = 'a';
+			}
+		}
+		case 2: x + y;
+		case 3: 
+		{
+			while(true)
+			{
+				x = x + 1 * 2 / 2 - 3;
+			}
+			while(x or y)
+			{
+		
+			}
+			if(x and y)
+			{
+		
+			}
+			if(x < y)
+			{
+		
+			}
+			else if(x > y)
+			{
+		
+			} 
+			else if(x == y)
+			{
+		
+			} 
+			else if(x >= y)
+			{
+		
+			}
+			else if(x <= y)
+			{
+		
+			}
+			else if(x == null or x== true or x ==false or x == this.value)
+			{
+		
+			}
+		}
+		case 4: return;
+		case 5: return 0;
+		case 6:
+		{
+			cout << 1;
+			cin >> intaker;
+		}
+		default: break;
+	}
+}

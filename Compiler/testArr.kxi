@@ -1,0 +1,127 @@
+﻿class ValueClass
+{
+	public int x;
+	public int y;
+	private int z = 1;
+	
+	ValueClass(int xIn, int yIn)
+	{
+		cout << '\n';
+		cout << 'C';
+		cout << 'o';
+		cout << 'n';
+		cout << 's';
+		cout << 't';
+		cout << '\n';
+
+		x = xIn;
+		y = yIn;
+
+		cout << '\n';
+		cout << 'V';
+		cout << 'a';
+		cout << 'l';
+		cout << 's';
+		cout << '\n';
+		cout << x;		
+		cout << '\n';
+		cout << y;		
+		cout << '\n';
+		cout << z;		
+		cout << '\n';
+
+		cout << '\n';
+		cout << 'R';
+		cout << 'e';
+		cout << 't';
+		cout << '\n';
+	}
+
+	public void f()
+	{
+	
+		cout << '\n';
+		cout << 'F';
+		cout << 'u';
+		cout << 'n';
+		cout << 'c';
+		cout << '\n';
+		cout << x;		
+		cout << '\n';
+		cout << y;		
+		cout << '\n';
+		cout << z;		
+	}
+
+}
+
+void kxi2021 main()
+{
+	int x = 0;
+	char xChar;
+	int y = 60;	
+	
+	char[] cArr = new char[10];
+	int[] arr = new int[10];
+
+	cout << '\n';
+	cout << 'A';
+	cout << 's';
+	cout << 's';
+	cout << 'i';
+	cout << 'g';
+	cout << 'n';
+	cout << '\n';
+
+	cArr[0] = 'a';
+	cArr[1] = 'b';
+	cArr[2] = 'c';
+	cArr[3] = 'd';
+	cArr[4] = 'e';
+
+	cout << '\n';
+	cout << 'V';
+	cout << 'e';
+	cout << 'r';
+	cout << 'i';
+	cout << 'f';
+	cout << 'y';
+	cout << '\n';
+
+	cout << cArr[0];	
+	cout << cArr[1];	
+	cout << cArr[2];	
+	cout << cArr[3];	
+	cout << cArr[4];
+
+	cout << '\n';
+	cout << 'V';
+	cout << 'e';
+	cout << 'r';
+	cout << 'i';
+	cout << 'f';
+	cout << 'y';
+	cout << ' ';
+	cout << 'I';
+	cout << 'n';
+	cout << 't';
+	cout << 's';
+	cout << '\n';
+
+	arr[0] = 1;
+	arr[1] = 2;
+	arr[2] = 3;
+	arr[3] = 4;
+	arr[4] = 5;
+
+	cout << arr[0];	
+	cout << arr[1];	
+	cout << arr[2];	
+	cout << arr[3];	
+	cout << arr[4];
+	cout << arr[5]; // Here down should be zero
+	cout << arr[6];
+	cout << arr[7];
+
+	cout << '\n';
+}

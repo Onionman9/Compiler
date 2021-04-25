@@ -1,0 +1,117 @@
+﻿class ValueClass
+{
+	public int x;
+	public int y;
+	public char c = 'a';
+	private int z = 1;
+	
+	ValueClass(int xIn, int yIn)
+	{
+		cout << '\n';
+		cout << 'C';
+		cout << 'o';
+		cout << 'n';
+		cout << 's';
+		cout << 't';
+		cout << '\n';
+
+		x = xIn;
+		y = yIn;
+
+		cout << '\n';
+		cout << 'V';
+		cout << 'a';
+		cout << 'l';
+		cout << 's';
+		cout << '\n';
+		cout << x;		
+		cout << '\n';
+		cout << y;		
+		cout << '\n';
+		cout << z;		
+		cout << '\n';
+
+		cout << '\n';
+		cout << 'R';
+		cout << 'e';
+		cout << 't';
+		cout << '\n';
+	}
+
+	public void f()
+	{
+	
+		cout << '\n';
+		cout << 'F';
+		cout << 'u';
+		cout << 'n';
+		cout << 'c';
+		cout << '\n';
+		cout << x;		
+		cout << '\n';
+		cout << y;		
+		cout << '\n';
+		cout << z;						
+		cout << '\n';
+		cout << c;
+	}
+
+}
+
+void kxi2021 main()
+{
+	int x = 0;
+	char xChar;
+	int y = 60;	
+	ValueClass v;	
+	ValueClass v2;
+
+	cout << '\n';
+	cout << 'C';
+	cout << 'r';
+	cout << 'e';
+	cout << 'a';
+	cout << 't';
+	cout << 'e';
+	cout << '\n';
+
+	v = new ValueClass(3,2);	
+	v2 = new ValueClass(7,6);
+
+	cout << '\n';
+	cout << 'V';
+	cout << 'e';
+	cout << 'r';
+	cout << 'i';
+	cout << 'f';
+	cout << 'y';
+	cout << '\n';
+
+	v.f();
+
+	cout << '\n';
+	cout << '\n';
+	cout << v.x;	
+	cout << '\n';
+	cout << v.y;	
+	cout << '\n';
+	cout << v.z;	
+
+	cout << '\n';
+	cout << 'O';
+	cout << 'b';
+	cout << 'j';
+	cout << ' ';
+	cout << '2';
+	cout << '\n';
+
+	v2.f();
+
+	cout << '\n';
+	cout << '\n';
+	cout << v2.x;	
+	cout << '\n';
+	cout << v2.y;	
+	cout << '\n';
+	cout << v2.z;	
+}

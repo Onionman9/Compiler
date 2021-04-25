@@ -1,0 +1,12 @@
+﻿void kxi2021 main()
+{
+	int x;
+	int y;
+	int z;
+
+	z = x + y;
+	while(x > 0)
+	{
+		x =(x + (y - (z * (z / (y + (2-(x/(y*(0-(y+(x/(z * 0 + 3 * 2 / - 5))))))))))) );
+	}
+}
