@@ -15,11 +15,11 @@
 		return gcd(b, mod(a,b));
 	}
 
-    public void iTree() {
+    iTreee() {
 	root = null;
     }
 
-    private int fib(int root) {
+    public int fib(int root) {
 	if (root == 0) return 0;
 	else if (root == 1) return 1;
 	else return (fib(root - 1) + fib(root - 2));
@@ -213,13 +213,13 @@ class PrintThis {
 class NoNo {
       private int i = 7;
       private char c = 'a';
-      private bool b = fale;
+      private bool b = false;
 	  public int[] arr;
 
 	  public int fff() {
 		}
 	  
-      Syntax(int j, char d) {
+      NoNo(char j, int d) {
          i = d;
          c = j;
       }
@@ -227,29 +227,29 @@ class NoNo {
       public void checkit() {
      char[] cc = new char[1000];
 	 int[]  ii = new int[512];
-	 Syntax[] ss = new Synax[256];
-	 ss[5].arrr['c'];
+	 NoNo[] ss = new NoNo[256];
+	 ss[5].arr[0];
 
 	 cc[1] = cc[2]; // yes
-	 cc[31] = cc;   
-	 cc[100] = 5 + i();
+	 // cc[31] = cc;   
+	 cc[100] = 'i';
 	 cc[10] = c;     // yes
 	 
 	 ii = ii; 
-	 i[4] = 5 + i;
+	 i = 5 + i;
 	 ii[5000] = 5 + i; // yes
-	 ii = ss;
+	 // ii = ss;
 	 i = ii[0];  // yes
-	 i = fff; // ouch
+	 i = fff(); // ouch
 	 
-	 true = false; // bad
-	 123 = 345;    // bad 
-	 this = null;  // bad
+	 // true = false; // bad
+	 // 123 = 345;    // bad 
+	 // this = null;  // bad
 	 
 
-	 ss[0] = new Syntax(7, 'c', 3);
+	 ss[0] = new NoNo('c', 3);
 	 ss[i] = ss[i+1]; // yes
-	 ss[i+7/3] = new Syntax(i, c); // yes
+	 ss[i+7/3] = new NoNo(c, i); // yes
 
 	 // spawn which(ii[0]) set ii[0]; 
       } 
@@ -264,25 +264,25 @@ class NoNo {
 void kxi2021 main() {
     char nl; // newline
     char key;
-    iTree tree;
-	int[] data = new intermission[90];
+    iTreee tree;
+	int[] data = new int[90];
 	int cnt = 0;
 	int i = 0;
-    Message msg = new Massage();
-	tree = this; // error, delete this line if you find the error
-    tree = new iTree();
+    Message msg = new Message();
+	
+    tree = new iTreee();
 
     msg.msg3();
-    cin >> 3;
+    cin >> i;
     cout << '\n';
     while (key != '!' and cnt < 30) {
-	if (tree.add(ky, key)) {
-	    msg.msg1(key);
+	if (tree.add(i)) {
+	    msg.msg1(i);
 	    tree.print();
 	}
 	else {
-	    msg.msg2('k');
-	    tre.prin();
+	    msg.msg2(0);
+	    tree.print();
 
         data[cnt*3] = cnt;
 	data[cnt*3+1] = tree.fib(cnt+2);
@@ -294,9 +294,9 @@ void kxi2021 main() {
 	cin >> key;
 	cout << '\n';
     }
-    while (i + cnt*3) {
-    	  System.out.print(data[i]);
-	  System.out.print(',');
+    while (i < cnt*3) {
+    	cout << data[i];
+	  cout << ',';
 	  i = i + 1;
     }
 }

@@ -34,6 +34,7 @@ namespace Compiler
         public bool inArgList = false;
         public bool ifExpression = false;
         public bool refFuncError = false;
+        public bool memFuncError = false;
         private string refErrorName = "";
         public DataRow commentRow = null;
         // Type Checking
@@ -351,12 +352,15 @@ namespace Compiler
                     int scopeLevel = 0;
                     // Verify Scope is correct
                     bool foundSym = true;
+                    if (!notMethod && symbol.Value.symid[0] != 'M')
+                    {
+                        foundSym = false;
+                        continue;
+                    }
                     int index = 0;
                     // Verify valid scope
                     foreach (string symScope in symbol.Value.scope.Split("."))
-                    {
-
-                        
+                    {                        
                         if (index < scope.Count && symScope.Equals(scope[index]))
                         {
                             index++;
@@ -403,9 +407,14 @@ namespace Compiler
             {
                 stack.Push(delayedPush);
             }
-            if (instanceCount == 0 && inToken.lexeme != "cout" && !refFuncError)
+            if (instanceCount == 0 && inToken.lexeme != "cout" && !refFuncError && notMethod)
             {
                 genSAMErrorIEXIST(inToken.lineNum, "variable", inToken.lexeme);
+            } 
+            else if (instanceCount == 0 && inToken.lexeme != "cout" && !refFuncError && !notMethod)
+            {
+                memFuncError = true;
+                refErrorName = inToken.lexeme;
             }
             if (inToken.lexeme == "cout")
             {
@@ -887,7 +896,10 @@ namespace Compiler
                     case "=":
                         if (leftSide.symbol.kind == "this")
                         {
-
+                            if (rightSide.symbol.kind == "null")
+                            {
+                                genInvalidOp(sOp.token.lineNum, leftSide.symbol.data[0][1], leftSide.symbol.lexeme, sOp.token.lexeme, rightSide.symbol.lexeme, rightSide.symbol.lexeme);
+                            }
                             string[] scopeArr = leftSide.symbol.scope.Split(".");
                             string scopie = "";
                             string type = scopeArr[scopeArr.Length - 2];
@@ -926,6 +938,10 @@ namespace Compiler
                             genInvalidOp(sOp.token.lineNum, leftSide.symbol.data[0][1], leftSide.symbol.lexeme, sOp.token.lexeme, rightSide.symbol.data[0][1], rightSide.symbol.lexeme);
                         }
                         else if (leftSide.symbol.kind == "null" && rightSide.symbol.kind != "this")
+                        {
+                            genInvalidOp(sOp.token.lineNum, leftSide.symbol.data[0][1], leftSide.symbol.lexeme, sOp.token.lexeme, rightSide.symbol.data[0][1], rightSide.symbol.lexeme);
+                        }
+                        else if (leftSide.symbol.kind == "this" && rightSide.symbol.kind != "null")
                         {
                             genInvalidOp(sOp.token.lineNum, leftSide.symbol.data[0][1], leftSide.symbol.lexeme, sOp.token.lexeme, rightSide.symbol.data[0][1], rightSide.symbol.lexeme);
                         }
@@ -1383,6 +1399,10 @@ namespace Compiler
                     catch (ArgumentOutOfRangeException e)
                     {
                         genSAMErrorIEXISTFunc(lineNum, leftSide.symbol.lexeme, argList.args, leftSide.symbol.scope.Remove(0, 2));
+                    }
+                    catch (KeyNotFoundException e) 
+                    {
+                        genSAMErrorIEXISTFuncMemRef(oStack.Peek().token.lineNum, refErrorName, argList.args);
                     }
                     indexie = indexie + 2; // note that in the symbol for a method the paramaters start at index 1, and each even index is a comma 
                 }
@@ -2149,6 +2169,11 @@ namespace Compiler
                         break;
                 }
             }
+
+            if (memFuncError) 
+            {
+                genSAMErrorIEXISTFuncMemRef(oStack.Peek().token.lineNum, refErrorName, args);
+            }
         }
         /*
            add a return push that has the containing methods return type 
@@ -2671,6 +2696,25 @@ namespace Compiler
             System.Environment.Exit(-1);
         }
         /*
+            IEXIST Func Error for Member Ref
+         */
+        public void genSAMErrorIEXISTFuncMemRef(int curLine, string lexeme, List<SARbase> args)
+        {
+            string s = curLine + ": Function " + lexeme + "(";
+            for (int i = 0; i < args.Count; i++)
+            {
+                s += args[i].symbol.data[0][1];
+                if (i < args.Count - 1)
+                {
+                    s += ',';
+                }
+            }
+            s += ")";
+            s += " not defined";
+            Console.WriteLine(s);
+            System.Environment.Exit(-1);
+        }
+        /*
             IEXIST Func Error
          */
         public void genSAMErrorIEXISTFunc(int curLine, string lexeme, List<SARbase> args, string scope)
@@ -2771,13 +2815,26 @@ namespace Compiler
          */
         public void genInvalidOp(int curLine, string type1, string lex1,string opIn, string type2, string lex2)
         {
+            string typeCheck = type1;
+            if (typeCheck.Contains("[]")) 
+            {
+                typeCheck = typeCheck.Replace("[", "");
+                typeCheck = typeCheck.Replace("]", "");
+            }
+
+            string typeCheck2 = type2;
+            if (typeCheck2.Contains("[]"))
+            {
+                typeCheck2 = typeCheck2.Replace("[", "");
+                typeCheck2 = typeCheck2.Replace("]", "");
+            }
             // check TExists
-            if (!classes.Contains(type1) && !(type1 == "int" || type1 == "char" || type1 == "bool" || type1 == "sym" || type1 == "void"))
+            if (!classes.Contains(type1) && !(typeCheck == "int" || typeCheck == "char" || typeCheck == "bool" || typeCheck == "sym" || typeCheck == "void"))
             {
                 Console.WriteLine(curLine + ": Type " + type1 + " not defined");
                 System.Environment.Exit(-1);
             } 
-            else if (!classes.Contains(type2) && !(type1 == "int" || type1 == "char" || type1 == "bool" || type1 == "sym" || type1 == "void")) 
+            else if (!classes.Contains(typeCheck2) && !(typeCheck2 == "int" || typeCheck2 == "char" || typeCheck2 == "bool" || typeCheck2 == "sym" || typeCheck2 == "void" || typeCheck2 == "null")) 
             {
                 Console.WriteLine(curLine + ": Type " + type2 + " not defined");
                 System.Environment.Exit(-1);

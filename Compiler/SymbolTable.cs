@@ -373,6 +373,7 @@ namespace Compiler
                     }
                     else if (classes.Contains(parsie.tokenArr[0].lexeme) && secondPass) 
                     {
+                        curClass = parsie.tokenArr[0].lexeme;
                         // Proceed in scope
                         string curLevel = parsie.tokenArr[0].lexeme;
                         scopeLevel.Add(curLevel);
@@ -408,6 +409,8 @@ namespace Compiler
                         {
                             genError(parsie.tokenArr[0].lineNum, parsie.tokenArr[0].lexeme, "{");
                         }
+
+                        curClass = "";
                     }
                     else
                     {
@@ -564,6 +567,10 @@ namespace Compiler
                 string idenName = addSymbol.lexeme;
                 if (secondPass) 
                 {
+                    if (idenName != curClass)
+                    {
+                        genSAMConst(parsie.tokenArr[0].lineNum, idenName, curClass);
+                    }
                     semanticAnalyzer.insideConstructor = true;
                     quad = permQuadPointer;
                     semanticAnalyzer.quad = permQuadPointer;
@@ -887,7 +894,11 @@ namespace Compiler
             else if (parsie.tokenArr[0].lexeme == "(") 
             {
                 // Verify this method is not the same name as class ()
-                if (idenName == curClass) 
+                if (idenName == curClass)
+                {
+                    genError(parsie.tokenArr[0].lineNum, idenName, "identifier");
+                }
+                else if (secondPass && classes.Contains(idenName)) 
                 {
                     genError(parsie.tokenArr[0].lineNum, idenName, "identifier");
                 }
@@ -2672,7 +2683,10 @@ namespace Compiler
                         parsie.Update();
                         if (secondPass)
                         {
-                            quad.AddRow(row[0].ToString(), row[1].ToString(), row[2].ToString(), row[3].ToString(), row[4].ToString(), row[5].ToString());
+                            if (row != null)
+                            {
+                                quad.AddRow(row[0].ToString(), row[1].ToString(), row[2].ToString(), row[3].ToString(), row[4].ToString(), row[5].ToString());
+                            }
                             semanticAnalyzer.rowStored = null;
                             semanticAnalyzer.incomingMemberRef = true;
                             semanticAnalyzer.EAL(parsie.tokenArr[0].lineNum); // pushes from the paramters to thew quad should be here
