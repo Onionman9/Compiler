@@ -24,6 +24,7 @@ namespace Compiler
         private int curMethodOffset = 0;
         private int byteSize = 0;
         string curLabel = "";
+        string curClass = "";
         // Used to make sure we are counting inside a class properly even if we pass into a nested method
         private bool insideClass = false;
         // Used when we begin calculating offesets for a methods instance variables
@@ -117,7 +118,7 @@ namespace Compiler
             parsie.ETreader.Close();
             parsie = new ETparser();
             parsie.Update();
-            semanticAnalyzer = new SAS(symbolHashSet,quad);
+            semanticAnalyzer = new SAS(symbolHashSet,quad, classes);
             // SECOND PASS
             Compiliation_Unit();
             /*
@@ -317,6 +318,7 @@ namespace Compiler
                 {
                     if (!classes.Contains(parsie.tokenArr[0].lexeme))
                     {
+                        curClass = parsie.tokenArr[0].lexeme;
                         classes.Add(parsie.tokenArr[0].lexeme);
                         // New class start offset at 0
                         curClassOffset = 0;
@@ -366,6 +368,8 @@ namespace Compiler
                         {
                             genError(parsie.tokenArr[0].lineNum, parsie.tokenArr[0].lexeme, "{");
                         }
+
+                        curClass = "";
                     }
                     else if (classes.Contains(parsie.tokenArr[0].lexeme) && secondPass) 
                     {
@@ -506,6 +510,7 @@ namespace Compiler
                     {
                         genError(parsie.tokenArr[0].lineNum, parsie.tokenArr[0].lexeme, "identifier");
                     }
+
                     Field_Declaration(idenName);
                     // Pop the field (methods stay on the stack)
                     if (secondPass)
@@ -881,6 +886,11 @@ namespace Compiler
             } 
             else if (parsie.tokenArr[0].lexeme == "(") 
             {
+                // Verify this method is not the same name as class ()
+                if (idenName == curClass) 
+                {
+                    genError(parsie.tokenArr[0].lineNum, idenName, "identifier");
+                }
                 // Write the func start                
                 parsie.Update();                
                 if (parsie.tokenArr[0].lexeme == ")")

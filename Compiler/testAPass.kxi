@@ -1,7 +1,7 @@
 ﻿class iTreee {
     private int LUE = 42;
     private iNode root;
-    private int fist;
+    private bool first;
 
 	private  int mod(int i, int j) { // k = i mod j
 		int k = i / j;
@@ -25,7 +25,7 @@
 	else return (fib(root - 1) + fib(root - 2));
     }
 
-    public bool add(char key) {
+    public bool add(int key) {
 	if (root == null) {
 	    root = new iNode();
 	    return true;
@@ -34,35 +34,35 @@
 	    return insert(key, root)				;
     }
 
-    private bool insert(char key, iNode node) {
+    private bool insert(int key, iNode node) {
 	if (key < node.root)
-	    if (node.left = null) {
-		node.left = new iTree();
+	    if (node.left == null) {
+		node.left = new iNode();
 		return true;
 	    }
 	    else 
-		return insert(key, nde.left);
+		return insert(key, node.left);
 	else if (key > node.root)
 	    if (node.right == null) {
 		node.right = new iNode(key);
 		return true;
 	    }
 	    else
-		return insert(key, node.rght);
+		return insert(key, node.right);
 	else { // key == node.root
-	     noode.inception();
+	     node.inc();
 	    return false;
 		}
 
 	}
     public void print() {
 	first = true;
-	inorder(rot);
-	System.out.print('\n');
+	inorder(root);
+	cout << '\n';
     }
     
-    private void inorder(iNode noode) {
-	if (node == null) return root;
+    private void inorder(iNode node) {
+	if (node == null) return;
 
 	inorder(node.left);
 	visit(node);
@@ -91,10 +91,10 @@ class iTree {}
 class iNode {
     public int root;
     public int cnt = 0;
-    public iode left = null;
+    public iNode left = null;
     public iNode right = null;
 
-    public void iNode(int key) {
+    iNode(int key) {
 	root = key;
 	cnt = 1;
     }
@@ -110,7 +110,7 @@ class Message {
     private int i;
     private int end;
 
-    public void Message() {
+    Message() {
     	msg = new char[100];
 	msg[0] = 'A';
 	msg[1] = 'd';
@@ -151,7 +151,7 @@ class Message {
 	    cout << msg[i];
 	    i = i + 1;
 		
-		return i;
+
 	}
     }	
 
@@ -162,8 +162,8 @@ class Message {
 	cout << '\n';
     }
 
-     public void msg1(int elm) {
-    }
+    
+    
 
     public bool msg2(int elm) {
 	i = 14;
@@ -186,15 +186,15 @@ class Message {
 class What {
 	public int two = 2;
 	public int zero = 0;
-	public bool two = true;
-	private char two = '2';
+	// public bool two = true;
+	// private char two = '2';
 	What() {}
 
 	private PrintThis pt = new PrintThis();
 
-	public void printWhat() 
+	private void printWhat() 
 	{
-		pt.writeThis(this, two);
+		pt.writeThis(this);
 	}
 
 }
@@ -202,7 +202,7 @@ class What {
 class PrintThis {
 	PrintThis() {}
 
-	private void writeThis(What w) {
+	public void writeThis(What w) {
 		cout << w.two;
 		cout << w.zero;
     	cout << '\n';
@@ -212,7 +212,7 @@ class PrintThis {
 // Lots of Syntax and Semantic errors below
 class NoNo {
       private int i = 7;
-      private car c = 'a';
+      private char c = 'a';
       private bool b = fale;
 	  public int[] arr;
 

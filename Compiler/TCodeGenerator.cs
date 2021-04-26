@@ -224,7 +224,6 @@ namespace Compiler
                         break;
                     case "MOV":
                         offSet = getLoc(returnStrArr[2]);
-
                         if (offSet >= 0)
                         {
                             // HANDLE GETTING A REFERENCE LOCATION HERE() It'll be on the heap
@@ -254,7 +253,7 @@ namespace Compiler
                         if (IsGlobal(symbolHashSet[returnStrArr[3]]))
                         {
                             // just move the global in R0 and then store
-                            if (symbolHashSet[returnStrArr[3]].data[0][1] == "int")
+                            if (symbolHashSet[returnStrArr[3]].data[0][1] != "char")
                             {
                                 sr.WriteLine("LDR R0 " + returnStrArr[3]);
                                 sr.WriteLine("STR R0 (R4)");
@@ -267,20 +266,13 @@ namespace Compiler
                         }
                         else
                         {
+
                             // for values on the AR, get the value by location and store it in the left side value (NOTE: The only postive offsets are REF variables which are calculated in REF commands and return an temp var that is on the AR)
                             sr.WriteLine("MOV R0 FP");
                             sr.WriteLine("ADI R0 #" + offSet);
-                            // HANDLE IF WE ARE STORING TO CHAR ON HEAP
-                            sr.WriteLine("LDR R0 (R0)");
+                            sr.WriteLine("LDR R0 (R0)"); // We get the temp var value of our heap address here
                             sr.WriteLine("STR R0 (R4)");
                         }
-
-                        // Handle Arrays
-                        if (offSet < 0 && returnStrArr[2][0] == 'R') 
-                        {
-                        
-                        }
-
                         break;
                     case "WRITEI":
                         offSet = getLoc(returnStrArr[2]);
@@ -695,7 +687,7 @@ namespace Compiler
                         sr.WriteLine(tCodeLine);
                         offSet = Convert.ToInt32(returnStrArr[3]);
 
-                        sr.WriteLine("ADI SL #" + offSet);
+                        sr.WriteLine("ADI SL #" + offSet); // SL should INCREASE by the SIZE OF THE ARRAY
                         // get first op WE CANT STORE INTO GLOABLS SO OUR OFFSET SHOULD ONLY BE 0 IF IT IS THE FIRST LOCATION IN HEAP
 
                         offSet = getLoc(returnStrArr[2]);
@@ -711,10 +703,12 @@ namespace Compiler
                         tCodeLine += "MOV R7 SL";
                         sr.WriteLine(tCodeLine);
                         offSet = symbolHashSet[returnStrArr[3]].curOffset;
-
                         sr.WriteLine("LDR R1 FP");
                         sr.WriteLine("ADI R1 #" + offSet);
                         sr.WriteLine("LDR R1 (R1)"); // The size of the array as an int should be in R1 now
+
+                        // Check this 
+
                         sr.WriteLine("ADD SL R1"); // The heap should increase by the size of the array
                         // get first op WE CANT STORE INTO GLOABLS SO OUR OFFSET SHOULD ONLY BE 0 IF IT IS THE FIRST LOCATION IN HEAP
 
@@ -722,7 +716,6 @@ namespace Compiler
                         sr.WriteLine("MOV R2 FP");
                         sr.WriteLine("ADI R2 #" + offSet);
                         // Store Heap Loc in temp var
-
                         sr.WriteLine("STR R7 (R2)");
                         offSet = getLoc(returnStrArr[2]);
                         break;
@@ -748,16 +741,56 @@ namespace Compiler
                     case "AEF":
                         // Ex AEF L130 N126 R19 
                         offSet = getLoc(returnStrArr[2]);
-                        tCodeLine += "MOV R0 FP";
-                        sr.WriteLine(tCodeLine);
-                        sr.WriteLine("ADI R0 #" + offSet);
-                        sr.WriteLine("LDR R0 (R0)"); // R0 now contains the address of our var on the heap
-                        offSet = Convert.ToInt32(symbolHashSet[returnStrArr[3]].lexeme); // this should be the index which means we need offset * 4 for anything that is NOT a char
-                        if (symbolHashSet[returnStrArr[2]].data[0][2] != "char")
+                        if (offSet < 0)
                         {
-                            offSet *= 4;
+                            tCodeLine += "MOV R0 FP";
+                            sr.WriteLine(tCodeLine);
+                            sr.WriteLine("ADI R0 #" + offSet);
+                            sr.WriteLine("LDR R0 (R0)"); // R0 now contains the address of our var on the heap
                         }
-                        sr.WriteLine("ADI R0 #" + offSet); // R0 now points to the location on the heap where our data is specifically
+                        else 
+                        {
+                            tCodeLine += "MOV R0 FP";
+                            sr.WriteLine(tCodeLine);
+                            sr.WriteLine("ADI R0 #-8");
+                            sr.WriteLine("LDR R0 (R0)"); // we are now at the base address in heap of our object
+                            sr.WriteLine("ADI R0 #" + offSet); // we are now at the stored address of out array in heap
+                            sr.WriteLine("LDR R0 (R0)"); // we are now at the base address of array in heap
+                        }
+
+                        try
+                        {
+                            // using a Global to access the array
+                            offSet = Convert.ToInt32(symbolHashSet[returnStrArr[3]].lexeme); // this should be the index which means we need offset * 4 for anything that is NOT a char
+                            if (symbolHashSet[returnStrArr[2]].data[0][2] != "char")
+                            {
+                                offSet *= 4;
+                            }
+                            sr.WriteLine("ADI R0 #" + offSet); // R0 now points to the location on the heap where our data is specifically
+                        }
+                        catch (FormatException e)
+                        {
+                            offSet = getLoc(returnStrArr[3]);
+                            // Our index is on the AR
+                            if (symbolHashSet[returnStrArr[3]].curOffset < 0)
+                            { 
+                                sr.WriteLine("MOV R1 FP");
+                                sr.WriteLine("ADI R1 #" + offSet);
+                                sr.WriteLine("LDR R1 (R1)"); // We have the value of the index in R1
+                                sr.WriteLine("ADD R0 R1"); // R0 is now the specific location in the array
+                            }
+                            else 
+                            {
+                                // Our index is on the heap 
+                                sr.WriteLine("MOV R1 FP");
+                                sr.WriteLine("ADI R1 #-8");
+                                sr.WriteLine("LDR R1 (R1)"); // we are now at the base address in heap
+                                sr.WriteLine("ADI R1 #" + offSet); // we now have the address of out index
+                                sr.WriteLine("LDR R1 (R1)"); // We have the value of the index in R1
+                                sr.WriteLine("ADD R0 R1"); // R0 is now the specific location in the array
+                            }
+                        }
+
                         // Get the data at the location
 
                         // We now need to store the R0 location at the temporary Rtype offset

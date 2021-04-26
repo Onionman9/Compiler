@@ -33,12 +33,17 @@ namespace Compiler
         public bool insideMethod = false;
         public bool inArgList = false;
         public bool ifExpression = false;
+        public bool refFuncError = false;
+        private string refErrorName = "";
         public DataRow commentRow = null;
-        public SAS(Dictionary<string, Symbol> _symbolHashSet, QuadTable quadPointer)
+        // Type Checking
+        List<string> classes;
+        public SAS(Dictionary<string, Symbol> _symbolHashSet, QuadTable quadPointer, List<string> _classes)
         {
             symbolHashSet = _symbolHashSet;
             tempVarCounter = 1;
             quad = quadPointer;
+            classes = _classes;
         }
         public void RExist(SymbolTable s, string lexeme) 
         {
@@ -169,7 +174,6 @@ namespace Compiler
                                 {
                                     instanceCount--;
                                 }
-                                instanceCount++;
                                 if (verifySym.Value.symid[0] == 'M')
                                 {
                                     SARinstance memRef = new SARinstance(verifySym.Value.symid, verifySym.Value);
@@ -325,8 +329,8 @@ namespace Compiler
                             }
                             else if (checkie == 1)
                             {
-
-                                genSAMErrorMemRef(inToken.lineNum, "Function", inToken.lexeme, classLex);
+                                refErrorName = inToken.lexeme;
+                                refFuncError = true;
                             }
                             else
                             {
@@ -399,7 +403,7 @@ namespace Compiler
             {
                 stack.Push(delayedPush);
             }
-            if (instanceCount == 0 && inToken.lexeme != "cout")
+            if (instanceCount == 0 && inToken.lexeme != "cout" && !refFuncError)
             {
                 genSAMErrorIEXIST(inToken.lineNum, "variable", inToken.lexeme);
             }
@@ -462,9 +466,11 @@ namespace Compiler
                     {
                         scopeComb += ".";
                     }
-                }
+                }                
                 
                 Symbol instance = new Symbol(scopeComb,"this","this","this");
+                instance.data[0].Add("type: ");
+                instance.data[0].Add(scope[1]);
                 stack.Push(new SARliteral(inToken.lexeme, instance));
                 instanceCount++;
             }
@@ -1336,6 +1342,12 @@ namespace Compiler
                 SARbase tempSAR = stack.Pop();
                 revParamPush.Push(tempSAR.symbol.symid);
                 argList.args.Insert(0,tempSAR);
+            }
+
+            if (refFuncError) 
+            {
+                stack.Pop();                
+                genSAMErrorMemRefFunc(lineNum, "Function", refErrorName, stack.Peek().symbol.data[0][1], argList);
             }
 
             while (revParamPush.Count != 0)
@@ -2293,7 +2305,7 @@ namespace Compiler
                 {
                     tempVarOffset += 4;
                 }
-                symbolHashSet.Add(malloc.symid, addie);
+                symbolHashSet.Add(malloc.symid, malloc);
                 tempVarCounter++;
                 quad.AddRow("", "NEW", malloc.symid, addie.symid, "", "");
                 
@@ -2584,6 +2596,14 @@ namespace Compiler
                 genSAMErrorIF(_lineNum, expresisonRes.symbol.data[0][1]);
             }
 
+            string[] scopeVer = scope.Split(".");
+
+            if (scopeVer[scopeVer.Length - 1] == expresisonRes.symbol.lexeme) 
+            {
+                genSAMErrorIF(_lineNum, "null");
+            }
+
+
             oStack.Pop();
         }
         /*
@@ -2751,6 +2771,17 @@ namespace Compiler
          */
         public void genInvalidOp(int curLine, string type1, string lex1,string opIn, string type2, string lex2)
         {
+            // check TExists
+            if (!classes.Contains(type1) && !(type1 == "int" || type1 == "char" || type1 == "bool" || type1 == "sym" || type1 == "void"))
+            {
+                Console.WriteLine(curLine + ": Type " + type1 + " not defined");
+                System.Environment.Exit(-1);
+            } 
+            else if (!classes.Contains(type2) && !(type1 == "int" || type1 == "char" || type1 == "bool" || type1 == "sym" || type1 == "void")) 
+            {
+                Console.WriteLine(curLine + ": Type " + type2 + " not defined");
+                System.Environment.Exit(-1);
+            }
             Console.WriteLine(curLine + ":  Invalid Operation " + type1 + " " + lex1 + " " + opIn + " "+  type2 + " " + lex2);
             System.Environment.Exit(-1);
         }
@@ -2768,6 +2799,25 @@ namespace Compiler
         public void genSAMErrorMemRef(int curLine, string type,string lexeme, string containingClass)
         {
             Console.WriteLine(curLine + ": " + type + " " + lexeme + " not defined/public in class " + containingClass);
+             System.Environment.Exit(-1);
+        }
+        /*
+            member Func Ref Error
+         */
+        public void genSAMErrorMemRefFunc(int curLine, string type, string lexeme, string containingClass, SAR_AL args)
+        {
+            string errorMsg = "" + curLine + ": " + type + " " + lexeme + "(";
+            for (int i = 0; i < args.args.Count; i++) 
+            {
+                errorMsg += args.args[i].symbol.data[0][1];
+                if (i < args.args.Count - 1) 
+                {
+                    errorMsg += ", ";
+                }
+            }
+            errorMsg += ") not defined/public in class " + containingClass;
+
+            Console.WriteLine(errorMsg);
             System.Environment.Exit(-1);
         }
         /*

@@ -4,38 +4,47 @@
 	public int y;
 	public char c = 'a';
 	private int z = 1;
+	private char[] msg;	
+	private int[] test;
 	
 	ValueClass(int xIn, int yIn)
 	{
-		cout << '\n';
-		cout << 'C';
-		cout << 'o';
-		cout << 'n';
-		cout << 's';
-		cout << 't';
-		cout << '\n';
-
 		x = xIn;
 		y = yIn;
 
-		cout << '\n';
-		cout << 'V';
-		cout << 'a';
-		cout << 'l';
-		cout << 's';
-		cout << '\n';
-		cout << x;		
-		cout << '\n';
-		cout << y;		
-		cout << '\n';
-		cout << z;		
-		cout << '\n';
+		msg = new char[20];
+
+		msg[0] = '\n';
+		msg[1] = 'S';
+		msg[2] = 'e';
+		msg[3] = 't';
+		msg[4] = ' ';
+		msg[5] = 'i';
+		msg[6] = 'n';
+		msg[7] = ' ';
+		msg[8] = 'C';
+		msg[9] = 'o';
+		msg[10] = 'n';
+		msg[11] = 's';
+		msg[12] = 't';
+		msg[13] = 'r';
+		msg[14] = 'u';
+		msg[15] = 'c';
+		msg[16] = 't';
+		msg[17] = 'o';
+		msg[18] = 'r';
+		msg[19] = '\n';
+
+		test = new int[2];
 
 		cout << '\n';
-		cout << 'R';
-		cout << 'e';
-		cout << 't';
+		cout << x;
 		cout << '\n';
+		cout << y;
+		cout << '\n';
+
+		test[0] = x;
+		test[1] = y;
 	}
 
 	public void f()
@@ -54,6 +63,53 @@
 		cout << z;						
 		cout << '\n';
 		cout << c;
+	}
+
+	public void g()
+	{
+		int i = 0;
+
+		while(i < 20)
+		{
+			cout << msg[i];
+			i = i + 1;
+		}
+
+		msg[0] = '\n';
+		msg[1] = 'S';
+		msg[2] = 'e';
+		msg[3] = 't';
+		msg[4] = ' ';
+		msg[5] = 'i';
+		msg[6] = 'n';
+		msg[7] = ' ';
+		msg[8] = 'F';
+		msg[9] = 'u';
+		msg[10] = 'n';
+		msg[11] = 'c';
+		msg[12] = 't';
+		msg[13] = 'i';
+		msg[14] = 'o';
+		msg[15] = 'n';
+		msg[16] = ' ';
+		msg[17] = ' ';
+		msg[18] = ' ';
+		msg[19] = '\n';
+
+		i = 0;
+
+		while(i < 20)
+		{
+			cout << msg[i];
+			i = i + 1;
+		}
+
+		test[0] = 3;
+		test[1] = 4;
+
+		cout << test[0];		
+		cout << msg[19];
+		cout << test[1];
 	}
 
 }
@@ -113,5 +169,8 @@ void kxi2021 main()
 	cout << '\n';
 	cout << v2.y;	
 	cout << '\n';
-	cout << v2.z;	
+	cout << v2.z;		
+	cout << '\n';
+	
+	v2.g();
 }
