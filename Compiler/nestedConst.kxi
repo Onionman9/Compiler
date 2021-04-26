@@ -1,0 +1,174 @@
+﻿class Russian
+{
+	public char[] msg;	
+	public Nesting nested;
+
+	Russian()
+	{
+		msg = new char[6];	
+
+		nested = new Nesting();
+
+		msg[0] = '\n';
+		msg[1] = 'R';
+		msg[2] = 'u';
+		msg[3] = 's';
+		msg[4] = 's';		
+		msg[5] = '\n';
+
+	}
+
+	public void open()
+	{
+	
+		int i = 0;
+
+		cout << '\n';
+		cout << 'O';
+		cout << 'p';
+		cout << 'e';
+		cout << 'n';
+		cout << '\n';
+
+		while(i < 6)
+		{		
+			cout << msg[i];
+			i = i + 1;
+		}
+
+		nested.open();
+
+		i = 0;
+
+		while(i < 6)
+		{		
+			cout << msg[i];
+			i = i + 1;
+		}
+
+		cout << '\n';
+		cout << 'C';
+		cout << 'l';
+		cout << 'o';
+		cout << 's';		
+		cout << 'e';
+		cout << '\n';
+
+	}
+
+}
+
+class Nesting
+{
+	public char[] msg;	
+	private Doll doll;
+	
+	Nesting()
+	{
+		msg = new char[6];	
+
+		doll = new Doll();
+
+		msg[0] = '\n';
+		msg[1] = 'N';
+		msg[2] = 'e';
+		msg[3] = 's';
+		msg[4] = 't';		
+		msg[5] = '\n';
+
+	}
+
+	public void open()
+	{
+	
+		int i = 0;
+
+		cout << '\n';
+		cout << 'O';
+		cout << 'p';
+		cout << 'e';
+		cout << 'n';
+		cout << '\n';
+
+		while(i < 6)
+		{		
+			cout << msg[i];
+			i = i + 1;
+		}
+
+		doll.open();
+
+		i = 0;
+
+		while(i < 6)
+		{		
+			cout << msg[i];
+			i = i + 1;
+		}
+
+		cout << '\n';
+		cout << 'C';
+		cout << 'l';
+		cout << 'o';
+		cout << 's';		
+		cout << 'e';
+		cout << '\n';
+
+	}
+
+}
+
+class Doll
+{
+	public char[] msg;	
+	
+	Doll()
+	{
+		msg = new char[6];	
+
+		msg[0] = '\n';
+		msg[1] = 'D';
+		msg[2] = 'o';
+		msg[3] = 'l';
+		msg[4] = 'l';		
+		msg[5] = '\n';
+
+	}
+
+	public void open()
+	{
+	
+		int i = 0;
+
+		cout << '\n';
+		cout << 'O';
+		cout << 'p';
+		cout << 'e';
+		cout << 'n';
+		cout << '\n';
+
+		while(i < 6)
+		{		
+			cout << msg[i];
+			i = i + 1;
+		}
+
+		cout << '\n';
+		cout << 'C';
+		cout << 'l';
+		cout << 'o';
+		cout << 's';		
+		cout << 'e';
+		cout << '\n';
+
+	}
+
+}
+
+
+void kxi2021 main()
+{
+	Russian r1 = new Russian();	
+
+	r1.open();
+}

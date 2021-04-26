@@ -160,7 +160,7 @@ namespace Compiler
                 {
                     case "FRAME":
                         // Create activation record
-                        tCodeLine += "MOV R5 SP";
+                        tCodeLine += "MOV R5 SP // FRAME " + returnStrArr[2];
                         sr.WriteLine(tCodeLine);
                         sr.WriteLine("MOV R0 FP");
                         sr.WriteLine("ADI R5 #-4"); // This puts us at our PFP (return value should be below this on the AR stack) this should also point to our current AR location
@@ -171,11 +171,20 @@ namespace Compiler
                         if (returnStrArr[3] != "this" && IsGlobal(symbolHashSet[returnStrArr[3]]))
                         {
                             // Note this should only ever have returnStrArr[2] == null, as we can only have objects and null as a this value
-                            if (returnStrArr[3] != "null") 
+                            if (returnStrArr[3] != "null")
                             {
                                 throw new Exception("Invalid This");
                             }
                             sr.WriteLine("LDR R6 " + returnStrArr[2]);
+                        }
+                        else if (offSet >= 0 && !(IsGlobal(symbolHashSet[returnStrArr[3]])))
+                        {
+                            // Getting a value on HEAP
+                            sr.WriteLine("LDR R6 FP");
+                            sr.WriteLine("ADI R6 #-8");
+                            sr.WriteLine("LDR R6 (R6)"); // LOCATION IN HEAP of current object
+                            sr.WriteLine("ADI R6 #" + offSet);
+                            sr.WriteLine("LDR R6 (R6)"); // LOCATION IN HEAP of instance var
                         }
                         else
                         {
@@ -382,7 +391,7 @@ namespace Compiler
                         }
                         else if (returnStrArr[2] == "this") 
                         {
-                            tCodeLine += "MOV R3 FP";
+                            tCodeLine += "MOV R3 FP // RETURN THIS";
                             sr.WriteLine(tCodeLine);
                             sr.WriteLine("ADI R3 #-8");
                             sr.WriteLine("LDR R3 (R3)"); // Double check

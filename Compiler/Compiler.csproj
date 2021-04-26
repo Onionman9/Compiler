@@ -18,6 +18,9 @@
     <None Update="IsolatedTest.kxi">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="nestedConst.kxi">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="norvig.kxi">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

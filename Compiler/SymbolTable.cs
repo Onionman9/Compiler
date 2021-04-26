@@ -805,7 +805,7 @@ namespace Compiler
                     Method_body();
                     if (secondPass && quad.GetBotRow()[1].ToString() != "RETURN")
                     {
-                        quad.AddRow("", "RTN", "", "", "", "");
+                        quad.AddRow("", "RETURN", "this", "", "", "");
                     }
                     // in the first pass we set it to the size without temps, in the second pass we add temps
 
