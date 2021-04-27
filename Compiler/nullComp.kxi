@@ -1,0 +1,85 @@
+﻿class ValueClass
+{
+	public int x;
+	
+	ValueClass(int xIn)
+	{
+		x = xIn;
+	}
+	public void g()
+	{
+		cout << x;
+	}
+
+}
+
+void kxi2021 main()
+{
+	ValueClass v;	
+
+	cout << '\n';
+	cout << 'T';
+	cout << 'r';
+	cout << 'u';
+	cout << 'e';
+	cout << '\n';
+
+	if(v == null)
+	{
+		cout << '\n';
+		cout << 't';
+		cout << '\n';
+	}
+	else
+	{
+			cout << '\n';
+		cout << 'f';
+		cout << '\n';
+	}
+
+	v = new ValueClass(3);	
+
+	cout << '\n';
+	cout << 'F';
+	cout << 'a';
+	cout << 'l';
+	cout << 's';	
+	cout << 'e';
+	cout << '\n';
+
+	if(v == null)
+	{
+		cout << '\n';
+		cout << 't';
+		cout << '\n';
+	}
+	else
+	{
+			cout << '\n';
+		cout << 'f';
+		cout << '\n';
+	}
+
+	cout << '\n';
+	cout << 'T';
+	cout << 'r';
+	cout << 'u';
+	cout << 'e';
+	cout << '\n';
+
+	v = null;
+
+	if(v == null)
+	{
+		cout << '\n';
+		cout << 't';
+		cout << '\n';
+	}
+	else
+	{
+			cout << '\n';
+		cout << 'f';
+		cout << '\n';
+	}
+
+}

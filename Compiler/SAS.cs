@@ -74,6 +74,7 @@ namespace Compiler
             string scopeCheck = "";
             SARinstance delayedPush = null;
             bool refAdd = false;
+            bool foundRef = false;
             if (parentId == "this") 
             {
                 // decompose scope on this and check if member exists
@@ -153,6 +154,12 @@ namespace Compiler
             }
             foreach (KeyValuePair<string, Symbol> symbol in symbolHashSet)
             {
+                // Bug Fixing
+                if (foundRef) 
+                {
+                    foundRef = false;
+                    break;
+                }
                 // Handle Member refs 
                 if (incomingMemberRef)
                 {
@@ -305,6 +312,7 @@ namespace Compiler
                                     tempVarCounter++;
                                     addie = memRef.symbol;
                                     // Push line onto quad
+                                    // LIKELY WE NEED TO ADD THE SYMBOL HERE
                                     quad.AddRow("", "REF", memRef.storedData[0].symbol.symid, memRef.storedData[1].symbol.symid, addie.symid, comment);
                                     if (firstRowComment)
                                     {
@@ -312,6 +320,7 @@ namespace Compiler
                                         firstRowComment = false;
                                     }
                                     stack.Push(memRef);
+                                    foundRef = true;
                                     // add the sarRef to the symbolTable
                                 }
                                 break;
@@ -889,7 +898,10 @@ namespace Compiler
                 }
                 rightSide = stack.Pop();
                 leftSide = stack.Pop();
-
+                if (leftSide is SAR_Func && stack.Count > 0 && sOp.token.lexeme == "=") 
+                {
+                    leftSide = stack.Pop();
+                }
                 Symbol addSym = null;
                 switch (sOp.token.lexeme)
                 {
@@ -2600,7 +2612,6 @@ namespace Compiler
 
         public void IfCheck(int _lineNum) 
         {
-
             while (oStack.Peek().token.lexeme != "(")
             {
                 SYA();

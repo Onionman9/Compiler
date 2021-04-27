@@ -77,7 +77,7 @@ namespace Compiler
                     }
                     else if (s.Value.symid == "null")
                     {
-                        sr.WriteLine("null .INT -666");
+                        sr.WriteLine("null .INT 0");
                     }
                     else if (s.Value.kind == "ilit")
                     {
@@ -194,6 +194,7 @@ namespace Compiler
                         }
                         sr.WriteLine("STR R6 (R5)");
                         calledFunc = returnStrArr[2];
+                        paramOffset = -12;
                         // TODO: IF WE ARE IN AN OBJECT WE MEED TO SET "THIS" ON OUR FUNCTION FP = return, FP -4 = PFP, FP - 8 = this 
                         // When we return set SP to top of PFP
 
@@ -233,6 +234,7 @@ namespace Compiler
                         break;
                     case "MOV":
                         offSet = getLoc(returnStrArr[2]);
+
                         if (offSet >= 0)
                         {
                             // HANDLE GETTING A REFERENCE LOCATION HERE() It'll be on the heap
@@ -241,6 +243,7 @@ namespace Compiler
                             sr.WriteLine("ADI R4 #-8");
                             sr.WriteLine("LDR R4 (R4)"); // Loads the heap address
                             sr.WriteLine("ADI R4 #" + offSet); // get location in heap (we are storing to here)
+
                         }
                         else if (returnStrArr[2][0] == 'R') 
                         {
@@ -301,6 +304,7 @@ namespace Compiler
                             sr.WriteLine("LDR R3 (R3)"); // Loads the heap address
                             sr.WriteLine("ADI R3 #" + offSet); // get location in heap
                             sr.WriteLine("LDR R3 (R3)"); // Loads the value at the heap location
+
                             sr.WriteLine("TRP 1");
                         }
                         else
@@ -313,14 +317,16 @@ namespace Compiler
                                 sr.WriteLine("ADI R3 #" + offSet); // temp var on AR
                                 sr.WriteLine("LDR R3 (R3)"); // LOCATION IN HEAP
                                 sr.WriteLine("LDR R3 (R3)"); // value in heap
-                                sr.WriteLine("TRP 3");
+                                // if it nested load one more time (note: consider loop for handling more than one instance of nesting)
+                                sr.WriteLine("TRP 1");
                             }
                             else
-                            {
+                            {                                
                                 // HANDLE REFS
                                 tCodeLine += "MOV R3 FP";
                                 sr.WriteLine(tCodeLine);
                                 sr.WriteLine("ADI R3 #" + offSet);
+                                sr.WriteLine("LDR R3 (R3)");
                                 sr.WriteLine("LDR R3 (R3)");
                                 sr.WriteLine("TRP 1");
                             }
@@ -365,7 +371,7 @@ namespace Compiler
                                 tCodeLine += "MOV R3 FP";
                                 sr.WriteLine(tCodeLine);
                                 sr.WriteLine("ADI R3 #" + offSet);
-
+                                sr.WriteLine("LDR R3 (R3)");
                                 sr.WriteLine("LDB R3 (R3)");
                                 sr.WriteLine("TRP 3");
                             }
@@ -423,7 +429,7 @@ namespace Compiler
                         }
                         else
                         {
-                            tCodeLine += "LDR R0 FP";
+                            tCodeLine += "MOV R0 FP";
                             sr.WriteLine(tCodeLine);
                             sr.WriteLine("ADI R0 #" + offSet);
                             sr.WriteLine("LDR R0 (R0)");
@@ -436,7 +442,7 @@ namespace Compiler
                         }
                         else
                         {
-                            sr.WriteLine("LDR R1 FP");
+                            sr.WriteLine("MOV R1 FP");
                             sr.WriteLine("ADI R1 #" + offSet);
                             sr.WriteLine("LDR R1 (R1)");
                         }
@@ -566,7 +572,15 @@ namespace Compiler
                         sr.WriteLine("ADI R1 #" + paramOffset);
                         paramOffset -= 4;
                         // Get the Value we want to store
-                        if (IsGlobal(symbolHashSet[returnStrArr[2]]))
+                        if (returnStrArr[2] == "this") 
+                        {
+                            sr.WriteLine("LDR R0 FP");
+                            sr.WriteLine("ADI R0 #-8");
+                            sr.WriteLine("LDR R0 (R0)");
+
+                            sr.WriteLine("MOV R3 R0");
+                        }
+                        else if (IsGlobal(symbolHashSet[returnStrArr[2]]))
                         {
                             sr.WriteLine("LDR R0 " + returnStrArr[2]);
                         }
@@ -575,11 +589,7 @@ namespace Compiler
                             offSet = getLoc(returnStrArr[2]);
                             sr.WriteLine("LDR R0 FP");
                             sr.WriteLine("ADI R0 #" + offSet);
-
                             sr.WriteLine("LDR R0 (R0)");
-
-                            sr.WriteLine("MOV R3 R0");
-
                         }
                         sr.WriteLine("STR R0 (R1)");
                         break;
@@ -716,8 +726,6 @@ namespace Compiler
                         sr.WriteLine("ADI R1 #" + offSet);
                         sr.WriteLine("LDR R1 (R1)"); // The size of the array as an int should be in R1 now
 
-                        // Check this 
-
                         sr.WriteLine("ADD SL R1"); // The heap should increase by the size of the array
                         // get first op WE CANT STORE INTO GLOABLS SO OUR OFFSET SHOULD ONLY BE 0 IF IT IS THE FIRST LOCATION IN HEAP
 
@@ -730,22 +738,65 @@ namespace Compiler
                         break;
 
                     case "REF":
+
                         offSet = getLoc(returnStrArr[2]);
                         tCodeLine += "MOV R0 FP";
                         sr.WriteLine(tCodeLine);
                         sr.WriteLine("ADI R0 #" + offSet);
                         sr.WriteLine("LDR R0 (R0)"); // R0 now contains the address stored by the temp var
+                        bool nestie = false;
+                        if (symbolHashSet[returnStrArr[4]].lexeme.Contains(".")) 
+                        {
+                            nestie = true;
+                            //sr.WriteLine("LDB R3 H109");
+                            //sr.WriteLine("TRP 3");
+                            //sr.WriteLine("TRP 3");
+                            //sr.WriteLine("MOV R3 R0");
+                            //sr.WriteLine("TRP 1");
+                            //sr.WriteLine("LDB R3 H109");
+                            //sr.WriteLine("TRP 3");
+                            
+                            // We enter this if we are getting a nested ref
+                            sr.WriteLine("LDR R0 (R0)");
+
+                            sr.WriteLine("LDB R3 H109");
+                            //sr.WriteLine("TRP 3");
+                            //sr.WriteLine("MOV R3 R0");
+                            //sr.WriteLine("TRP 1");
+                            //sr.WriteLine("LDB R3 H109");
+                            //sr.WriteLine("TRP 3");
+                        }
                         offSet = getLoc(returnStrArr[3]);
                         sr.WriteLine("ADI R0 #" + offSet); // R0 now points to the location on the heap where our data is specifically
+
+                        if (symbolHashSet[returnStrArr[4]].lexeme.Contains("."))
+                        {
+                            //sr.WriteLine("LDB R3 H109");
+                            //sr.WriteLine("TRP 3");
+                            //sr.WriteLine("MOV R3 R0");
+                            //sr.WriteLine("TRP 1");
+                            //sr.WriteLine("LDB R3 H109");
+                            //sr.WriteLine("TRP 3");
+                            // sr.WriteLine("TRP 3");
+                        }
+
+                        // CHecking
                         // Get the data at the location
                         sr.WriteLine("LDR R1 (R0)"); // R1 now contains the value in the heap WE DONT NEED TO CHECK IF IT IS A CHAR BECAUSE IT STILL TAKES 4 BYTES ON AR, we just wont use whatever the other 3 bytes we get after the location are
-
+                        
+                        
 
                         // We now need to store the R0 value at the temporary Rtype offset
                         offSet = getLoc(returnStrArr[4]);
                         sr.WriteLine("MOV R2 FP");
                         sr.WriteLine("ADI R2 #" + offSet);
+                        if (nestie) 
+                        {
+                            sr.WriteLine("STR R0 (R2)"); // we store the value at R1 into the location at R2, our referance in the AR now contains the val we want
+                            break;
+                        }
                         sr.WriteLine("STR R1 (R2)"); // we store the value at R1 into the location at R2, our referance in the AR now contains the val we want
+                        
                         break;
                     case "AEF":
                         // Ex AEF L130 N126 R19 

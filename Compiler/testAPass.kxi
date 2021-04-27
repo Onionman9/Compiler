@@ -27,7 +27,7 @@
 
     public bool add(int key) {
 	if (root == null) {
-	    root = new iNode();
+	    root = new iNode(key);
 	    return true;
 	}
 	else
@@ -37,7 +37,7 @@
     private bool insert(int key, iNode node) {
 	if (key < node.root)
 	    if (node.left == null) {
-		node.left = new iNode();
+		node.left = new iNode(key);
 		return true;
 	    }
 	    else 
@@ -99,7 +99,7 @@ class iNode {
 	cnt = 1;
     }
 	
-	iNode() {} 
+	// iNode() {} 
 
     public void inc() { cnt = cnt + 1; }
 }

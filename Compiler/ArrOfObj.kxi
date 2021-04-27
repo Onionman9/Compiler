@@ -1,0 +1,61 @@
+﻿class numLet
+{
+	public int num;
+	public char let;
+
+	numLet(int numIn, char letIn)
+	{
+		num = numIn;
+		cout << '\n';
+		let = letIn;
+		cout << '\n';
+	}
+}
+
+void kxi2021 main()
+{
+	numLet[] objArr = new numLet[3];
+	char[] msg = new char[27];
+	int counter;
+	numLet n1;
+
+	objArr[0] = new numLet(1, 'a');
+	objArr[1] = new numLet(2, 'b');
+	objArr[2] = new numLet(3, 'c');
+	
+	cout << '\n';
+	
+	
+	cout << 'A';
+	cout << 's';
+	cout << 's';
+	cout << 'i';
+	cout << 'g';
+	cout << 'n';
+	
+	cout << '\n';
+
+
+	n1 = objArr[0];
+	cout << n1.num;		
+	cout << '\n';
+	cout << n1.let;
+	cout << '\n';
+	counter = 0;
+
+	cout << 'W';
+	cout << 'h';
+	cout << 'i';
+	cout << 'l';
+	cout << 'e';
+
+	cout << '\n';
+
+	while(counter < 3)
+	{
+		cout << objArr[counter].num;		
+		cout << objArr[counter].let;
+		cout << '\n';
+		counter = counter + 1;
+	}
+}

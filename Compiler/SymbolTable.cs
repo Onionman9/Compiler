@@ -25,6 +25,7 @@ namespace Compiler
         private int byteSize = 0;
         string curLabel = "";
         string curClass = "";
+        private bool constError = false;
         // Used to make sure we are counting inside a class properly even if we pass into a nested method
         private bool insideClass = false;
         // Used when we begin calculating offesets for a methods instance variables
@@ -532,6 +533,28 @@ namespace Compiler
                 tempSymbols = new List<Symbol>();
                 // Begin Symbol Creation
                 addSymbol = new Symbol(scopeString(), "X" + symbolCounter, parsie.tokenArr[0].lexeme, "constructor");
+                // Check for Duplicate
+                int constructorCount = 0;
+                if (constError) 
+                {
+                    genSAMErrorDupConst(parsie.tokenArr[0].lineNum, parsie.tokenArr[0].lexeme);
+                }
+
+                if (secondPass) 
+                {
+                    foreach (KeyValuePair<string, Symbol> s in symbolHashSet)
+                    {
+                        if (s.Value.lexeme == parsie.tokenArr[0].lexeme && s.Value.symid[0] == 'X')
+                        {
+                            constructorCount++;
+                        }
+                        if (constructorCount > 1)
+                        {
+                            constError = true;
+                        }
+                    }
+                }
+
                 if (!secondPass)
                 {
                     symbolCounter++;
@@ -1390,7 +1413,7 @@ namespace Compiler
 
             if (!secondPass)
             {
-                if (insideMethod) 
+                if (insideMethod)
                 {
                     addSymbol.curOffset = curMethodOffset;
                     addSymbol.byteSize = 4;
@@ -2255,6 +2278,10 @@ namespace Compiler
                                 semanticAnalyzer.firstRowComment = true;
                             }
                             semanticAnalyzer.endArr(scopeString());
+                            if (semanticAnalyzer.tempVarOffset < curMethodOffset) 
+                            {
+                                curMethodOffset = semanticAnalyzer.tempVarOffset;
+                            }
                         }
                         parsie.Update();
                         if (parsie.tokenArr[0].lexeme == ".")

@@ -55,7 +55,7 @@ namespace Compiler
             row = quad.NewRow();
             if (labelNext)
             {
-                if (!label.Contains("StaticInit"))
+                if (label == "")
                 {
                     row["Label"] = labelStack.Pop();
                 }
