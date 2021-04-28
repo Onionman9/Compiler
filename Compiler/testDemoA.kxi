@@ -1,43 +1,54 @@
-﻿class iTreee {
-    private int LUE = 42;
+﻿class iTree {
     private iNode root;
     private bool first;
 
-	private  int mod(int i, int j) { // k = i mod j
+    private  int mod(int i, int j) { // k = i mod j
 		int k = i / j;
-		// bool k;
 		k = i - j * k;
 		return k;
 	}
 	
 	public int gcd(int a, int b) { 
-		if (b == 0) return;
-		return gcd(b, mod(a,b));
+		if (b == 0) return a;
+		return gcd(b, mod(a, b));
 	}
 
-    iTreee() {
+    iTree() {
 	root = null;
     }
 
-    public int fib(int root) {
+
+
+    public  int fib(int root) {
 	if (root == 0) return 0;
 	else if (root == 1) return 1;
 	else return (fib(root - 1) + fib(root - 2));
     }
 
-    public bool add(int key) {
+	private int fact(int n)
+    {
+        int result;
+
+       if(n==1)
+         return 1;
+
+       result = fact(n-1) * n;
+       return result;
+    }
+
+    public bool add(char key) {
 	if (root == null) {
 	    root = new iNode(key);
 	    return true;
 	}
 	else
-	    return insert(key, root)				;
+	    return insert(key, root);
     }
 
-    private bool insert(int key, iNode node) {
+    private bool insert(char key, iNode node) {
 	if (key < node.root)
 	    if (node.left == null) {
-		node.left = new iNode();
+		node.left = new iNode(key);
 		return true;
 	    }
 	    else 
@@ -50,11 +61,12 @@
 	    else
 		return insert(key, node.right);
 	else { // key == node.root
-	     node.inc();
+	    node.inc();
 	    return false;
-		}
-
 	}
+    }
+
+
     public void print() {
 	first = true;
 	inorder(root);
@@ -86,32 +98,33 @@
     }
 }
 
-class iTree {}
-
 class iNode {
-    public int root;
+    public char root;
     public int cnt = 0;
     public iNode left = null;
     public iNode right = null;
 
-    iNode(int key) {
-	root = key;
-	cnt = 1;
+    iNode(char key) {
+	root =  key;
+	cnt  =  1;
     }
-	
-	// iNode() {} 
 
-    public void inc() { cnt = cnt + 1; }
+    public void inc() {
+	cnt = cnt + 1;
+    }
+
+
 }
 
-
+// Without using an Array is DemoB 
 class Message {
-    private char[] msg;
+    private char[] msg = new char[100];
     private int i;
     private int end;
 
     Message() {
-    	msg = new char[100];
+
+	cout << ' ';
 	msg[0] = 'A';
 	msg[1] = 'd';
 	msg[2] = 'd';
@@ -150,22 +163,18 @@ class Message {
 	while (i <= end) {
 	    cout << msg[i];
 	    i = i + 1;
-		
-
 	}
     }	
 
-
-    public void msg1(int elm) {
+    // Added */
+    public void msg1(char elm) {
 	print(0, 13);
 	cout << elm;
 	cout << '\n';
     }
 
-    
-    
-
-    public bool msg2(int elm) {
+    // Duplicate */
+    public void msg2(char elm) {
 	i = 14;
 	end = (i + 8);
 	print(i, end);
@@ -175,7 +184,7 @@ class Message {
 	cout << '\n';
     }
     
-    public int msg3() {
+    public void msg3() {
 	print(24, 28);
 	i = 5;
 	print(i, i);
@@ -186,14 +195,13 @@ class Message {
 class What {
 	public int two = 2;
 	public int zero = 0;
-	// public bool two = true;
-	// private char two = '2';
 	What() {}
 
 	private PrintThis pt = new PrintThis();
 
-	private void printWhat() 
+	public void printWhat() 
 	{
+		cout << 'P';
 		pt.writeThis(this);
 	}
 
@@ -205,99 +213,53 @@ class PrintThis {
 	public void writeThis(What w) {
 		cout << w.two;
 		cout << w.zero;
-    	cout << '\n';
+    cout << '\n';
 	}
 }
 
-// Lots of Syntax and Semantic errors below
-class NoNo {
-      private int i = 7;
-      private char c = 'a';
-      private bool b = false;
-	  public int[] arr;
-
-	  public int fff() {
-		}
-	  
-      NoNo(char j, int d) {
-         i = d;
-         c = j;
-      }
-
-      public void checkit() {
-     char[] cc = new char[1000];
-	 int[]  ii = new int[512];
-	 NoNo[] ss = new NoNo[256];
-	 ss[5].arr[0];
-
-	 cc[1] = cc[2]; // yes
-	 // cc[31] = cc;   
-	 cc[100] = 'i';
-	 cc[10] = c;     // yes
-	 
-	 ii = ii; 
-	 i = 5 + i;
-	 ii[5000] = 5 + i; // yes
-	 // ii = ss;
-	 i = ii[0];  // yes
-	 i = fff(); // ouch
-	 
-	 // true = false; // bad
-	 // 123 = 345;    // bad 
-	 // this = null;  // bad
-	 
-
-	 ss[0] = new NoNo('c', 3);
-	 ss[i] = ss[i+1]; // yes
-	 ss[i+7/3] = new NoNo(c, i); // yes
-
-	 // spawn which(ii[0]) set ii[0]; 
-      } 
-
-      public int which(int i) {
-         i = i * i;
-	 return i;
-      }
-}
-
-
+ 
 void kxi2021 main() {
-    char nl; // newline
-    char key;
-    iTreee tree;
+	char key;
+	iTree tree;
 	int[] data = new int[90];
 	int cnt = 0;
 	int i = 0;
-    Message msg = new Message();
-	
-    tree = new iTreee();
+	Message msg = new Message();
+	What what = new What();	
+	tree = new iTree();
 
-    msg.msg3();
-    cin >> i;
-    cout << '\n';
-    while (key != '!' and cnt < 30) {
-	if (tree.add(i)) {
-	    msg.msg1(i);
-	    tree.print();
-	}
-	else {
-	    msg.msg2(0);
-	    tree.print();
+	what.printWhat();
 
-        data[cnt*3] = cnt;
+	msg.msg3();
+	cin >> key;
+	cout << '\n';
+	while (key != '!' and cnt < 30) {
+
+	    if (tree.add(key)) {
+		msg.msg1(key);
+		tree.print();
+	    }
+	    else {
+		msg.msg2(key);
+		tree.print();
+	    }
+
+	data[cnt*3] = cnt;
 	data[cnt*3+1] = tree.fib(cnt+2);
 	data[cnt*3+2] = tree.gcd(data[cnt*3], data[cnt*3+1]);
 	cnt = cnt + 1;
 
 	msg.msg3();
-	cin >> nl;
 	cin >> key;
 	cout << '\n';
-    }
-    while (i < cnt*3) {
-    	cout << data[i];
-	  cout << ',';
-	  i = i + 1;
-    }
+
+	}
+
+	while (i < cnt*3) {
+	    cout <<  data[i];
+	    cout << ',';
+	    i = i + 1;
+	}
+
 }
-}
+

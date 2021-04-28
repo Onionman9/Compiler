@@ -1,11 +1,6 @@
 ﻿class Funcs
 {
 
-	Funcs()
-	{
-
-	}
-
 	public int fib(int x)
 	{
 		if(x == 1)
@@ -41,7 +36,7 @@
 
 void kxi2021 main()
 {
-	Funcs r1 = new Funcs();	
+	Funcs r1;
 	int x = 0;
 	int counter = 1;
 	

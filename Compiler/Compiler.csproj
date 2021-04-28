@@ -9,6 +9,9 @@
     <None Update="ArrOfObj.kxi">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="demoAFinal.kxi">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="ExOne.kxi">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -16,6 +19,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="ICodeStart.kxi">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="incToA.kxi">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="IsolatedTest.kxi">
@@ -52,6 +58,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="testConst.kxi">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="testDemoA.kxi">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="testFuncs.kxi">

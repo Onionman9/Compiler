@@ -1532,6 +1532,7 @@ namespace Compiler
                     {
                         semanticAnalyzer.OPush(parsie.tokenArr[0]);
                         semanticAnalyzer.ifExpression = true;
+                        semanticAnalyzer.ifNestedExpression = true;
                     }
                     parsie.Update();
                     Expression();
@@ -1549,6 +1550,7 @@ namespace Compiler
                         semanticAnalyzer.comment = parsie.commentLine;
                         semanticAnalyzer.IfCheck(parsie.tokenArr[0].lineNum);
                         semanticAnalyzer.ifExpression = false;
+                        semanticAnalyzer.ifNestedExpression = false;
                     }
                     // Enter if
                     bool backPatchIf = false;
@@ -2681,6 +2683,13 @@ namespace Compiler
                     {
                         callID = (string)quad.GetBotRow()[2];
                         row = quad.RemoveBotRow();
+                        string label = row[0].ToString();
+                        if (quad.GetBotRowArr()[1] == "JMP") 
+                        {
+                            quad.labelNext = true;
+                            quad.labelStack.Push(label);
+                            row[0] = "";
+                        }
                     }
                     else if (semanticAnalyzer.checkie == 1) 
                     {

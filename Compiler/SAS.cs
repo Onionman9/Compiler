@@ -33,6 +33,7 @@ namespace Compiler
         public bool insideMethod = false;
         public bool inArgList = false;
         public bool ifExpression = false;
+        public bool ifNestedExpression = false;
         public bool refFuncError = false;
         public bool memFuncError = false;
         private string refErrorName = "";
@@ -2092,6 +2093,10 @@ namespace Compiler
                             args.Add(rightSide);
                             if (stack.Count == 0)
                             {
+                                if (ifNestedExpression == true) 
+                                {
+                                    stack.Push(rightSide);
+                                }
                                 return;
                             }
                             leftSide = stack.Pop();
@@ -2793,6 +2798,11 @@ namespace Compiler
          */
         public void genSAMErrorRET(int curLine, string type, string errorType)
         {
+            if (!classes.Contains(errorType) && errorType != "bool" && errorType != "int" && errorType != "char" && errorType != "int" && errorType != "void" && errorType != "sym")
+            {
+                Console.WriteLine(curLine + ": Type " + errorType + " not defined");
+                System.Environment.Exit(-1);
+            }
             Console.WriteLine(curLine + ":  Function requires " + type + " returned " + errorType);
             System.Environment.Exit(-1);
         }

@@ -130,6 +130,7 @@ namespace Compiler
         {
             sr.WriteLine("// QUAD TABLE AS TARGET CODE BELOW");
             int counter = 0;
+            string calledFunc = "";
             foreach (DataRow row in finalQuad.quad.Rows)
             {
                 string[] returnStrArr = new string[6];
@@ -140,7 +141,6 @@ namespace Compiler
                 returnStrArr[3] = (string)finalQuad.quad.Rows[counter][3];
                 returnStrArr[4] = (string)finalQuad.quad.Rows[counter][4];
                 returnStrArr[5] = (string)finalQuad.quad.Rows[counter][5];
-                string calledFunc = "";
                 counter++;
                 string tCodeLine = "";
                 // Add Labels 
@@ -192,15 +192,15 @@ namespace Compiler
                             sr.WriteLine("ADI R6 #" + offSet);
                             sr.WriteLine("LDR R6 (R6)");
                         }
-                        sr.WriteLine("STR R6 (R5)");
-                        calledFunc = returnStrArr[2];
+                        sr.WriteLine("STR R6 (R5) // END FRAME");
+                        calledFunc = returnStrArr[2]; // This if for debugging
                         paramOffset = -12;
                         // TODO: IF WE ARE IN AN OBJECT WE MEED TO SET "THIS" ON OUR FUNCTION FP = return, FP -4 = PFP, FP - 8 = this 
                         // When we return set SP to top of PFP
 
                         break;
                     case "CALL":
-                        tCodeLine += "MOV R5 PC";
+                        tCodeLine += "MOV R5 PC // BEGIN METHOD CALL + " + calledFunc;
                         sr.WriteLine(tCodeLine);
                         sr.WriteLine("ADI R5 #20");
                         sr.WriteLine("MOV FP SP"); // Updating the FP to the new SP
@@ -212,7 +212,7 @@ namespace Compiler
                         sr.WriteLine("MOV SP FP"); // move SP back to FP and then set the FP to the PFP
                         sr.WriteLine("ADI R2 #-4"); // R2 is now the address of our pfp
                         sr.WriteLine("LDR R2 (R2)");
-                        sr.WriteLine("MOV FP R2"); // move the PFP value into our FP
+                        sr.WriteLine("MOV FP R2 // END CALL"); // move the PFP value into our FP
                         calledFunc = ""; // reset this after we call the function
                         paramOffset = -12;
                         break;
@@ -320,14 +320,17 @@ namespace Compiler
                                 // if it nested load one more time (note: consider loop for handling more than one instance of nesting)
                                 sr.WriteLine("TRP 1");
                             }
-                            else
+                            else 
                             {                                
                                 // HANDLE REFS
                                 tCodeLine += "MOV R3 FP";
                                 sr.WriteLine(tCodeLine);
                                 sr.WriteLine("ADI R3 #" + offSet);
-                                sr.WriteLine("LDR R3 (R3)");
-                                sr.WriteLine("LDR R3 (R3)");
+                                sr.WriteLine("LDR R3 (R3) // assumed ref var");
+                                if (symbolHashSet[returnStrArr[2]].data[0][1] != "int" && symbolHashSet[returnStrArr[2]].data[0][1] != "char" && symbolHashSet[returnStrArr[2]].data[0][1] != "bool") 
+                                {
+                                    sr.WriteLine("LDR R3 (R3)");
+                                }
                                 sr.WriteLine("TRP 1");
                             }
                         }
@@ -567,7 +570,7 @@ namespace Compiler
                         break;
                     case "PUSH":
                         // Get the param location
-                        tCodeLine += "LDR R1 SP";
+                        tCodeLine += "LDR R1 SP // PUSH PARAM";
                         sr.WriteLine(tCodeLine);
                         sr.WriteLine("ADI R1 #" + paramOffset);
                         paramOffset -= 4;
@@ -591,11 +594,11 @@ namespace Compiler
                             sr.WriteLine("ADI R0 #" + offSet);
                             sr.WriteLine("LDR R0 (R0)");
                         }
-                        sr.WriteLine("STR R0 (R1)");
+                        sr.WriteLine("STR R0 (R1) // END PUSH");
                         break;
                     case "PEEK":
                         // after a function call peek the top value and store it on the temp 29 var
-                        tCodeLine += "MOV R3 SP";
+                        tCodeLine += "MOV R3 SP // PEEK";
                         sr.WriteLine(tCodeLine);
                         // Get the return value
                         sr.WriteLine("LDR R2 (R3)");
@@ -603,7 +606,7 @@ namespace Compiler
                         offSet = getLoc(returnStrArr[2]);
                         sr.WriteLine("LDR R1 FP");
                         sr.WriteLine("ADI R1 #" + offSet);
-                        sr.WriteLine("STR R2 (R1)");
+                        sr.WriteLine("STR R2 (R1) // END PEEK");
                         // The value of the method call should now be stored at the temp var in the function
                         break;
                     case "JMP":
@@ -837,7 +840,13 @@ namespace Compiler
                                 sr.WriteLine("MOV R1 FP");
                                 sr.WriteLine("ADI R1 #" + offSet);
                                 sr.WriteLine("LDR R1 (R1)"); // We have the value of the index in R1
-                                sr.WriteLine("ADD R0 R1"); // R0 is now the specific location in the array
+
+                                if (symbolHashSet[returnStrArr[2]].data[0][2] != "char")
+                                {
+                                    sr.WriteLine("LDR R3 N101");
+                                    sr.WriteLine("MUL R1 R3"); // R0 is now the specific location in the array of our int or object address
+                                }
+                                sr.WriteLine("ADD R0 R1"); // R0 is now the specific location in the array of our int or object address
                             }
                             else 
                             {

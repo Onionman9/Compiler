@@ -131,6 +131,18 @@ namespace Compiler
             return quad.Rows[quad.Rows.Count - 1];
         }
 
+        internal string[] GetBotRowArr()
+        {
+            string[] returnStrArr = new string[6];
+            returnStrArr[0] = (string)quad.Rows[quad.Rows.Count - 1][0];
+            returnStrArr[1] = (string)quad.Rows[quad.Rows.Count - 1][1];
+            returnStrArr[2] = (string)quad.Rows[quad.Rows.Count - 1][2];
+            returnStrArr[3] = (string)quad.Rows[quad.Rows.Count - 1][3];
+            returnStrArr[4] = (string)quad.Rows[quad.Rows.Count - 1][4];
+            returnStrArr[5] = (string)quad.Rows[quad.Rows.Count - 1][5];
+            return returnStrArr;
+        }
+
         public string[] RemoveBotRow() 
         {
             string[] returnStrArr = new string[6];
