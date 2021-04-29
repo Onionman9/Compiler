@@ -18,13 +18,13 @@ namespace Compiler
         public int internlLblCnt = 0;
         private int paramOffset = -12;
         public string nextLbl = "";
-        public TCodeGenerator(Dictionary<string, Symbol> _symbolHashSet, QuadTable _finalQuad) 
+        public TCodeGenerator(Dictionary<string, Symbol> _symbolHashSet, QuadTable _finalQuad)
         {
             symbolHashSet = _symbolHashSet;
             finalQuad = _finalQuad;
         }
 
-        public void writeTCodeFile() 
+        public void writeTCodeFile()
         {
             StreamWriter writie = new StreamWriter("tcode.asm");
             // Write all the globals into the file, before we do anything else
@@ -35,9 +35,9 @@ namespace Compiler
             writie.Close();
         }
 
-        public int getLoc(string findSymId) 
+        public int getLoc(string findSymId)
         {
-            if (findSymId == "this") 
+            if (findSymId == "this")
             {
                 return -8;
             }
@@ -53,7 +53,7 @@ namespace Compiler
             {
                 return symbolHashSet[findSymId].curOffset;
             }
-        
+
         }
 
 
@@ -62,7 +62,6 @@ namespace Compiler
          */
         public void WriteGlobals(StreamWriter sr)
         {
-            sr.WriteLine("// GLOBALS BELOW");
             foreach (KeyValuePair<string, Symbol> s in symbolHashSet)
             {
                 if (IsGlobal(s.Value))
@@ -88,7 +87,8 @@ namespace Compiler
                         if (s.Value.lexeme == "'\\n'")
                         {
                             sr.WriteLine(s.Value.symid + " .BYT " + "'\\" + "10'");
-                        } else if (s.Value.lexeme == "' '") 
+                        }
+                        else if (s.Value.lexeme == "' '")
                         {
                             sr.WriteLine(s.Value.symid + " .BYT " + "'\\" + "32'");
                         }
@@ -116,7 +116,7 @@ namespace Compiler
          */
         private bool IsCharNum(string lexeme)
         {
-            if (lexeme == "'0'" || lexeme == "'1'" || lexeme == "'2'" || lexeme == "'3'" || lexeme == "'4'" || lexeme == "'5'" || lexeme == "'6'" || lexeme == "'7'" || lexeme == "'8'" || lexeme == "'9'") 
+            if (lexeme == "'0'" || lexeme == "'1'" || lexeme == "'2'" || lexeme == "'3'" || lexeme == "'4'" || lexeme == "'5'" || lexeme == "'6'" || lexeme == "'7'" || lexeme == "'8'" || lexeme == "'9'")
             {
                 return true;
             }
@@ -128,7 +128,6 @@ namespace Compiler
          */
         public void WriteQuad(StreamWriter sr)
         {
-            sr.WriteLine("// QUAD TABLE AS TARGET CODE BELOW");
             int counter = 0;
             string calledFunc = "";
             foreach (DataRow row in finalQuad.quad.Rows)
@@ -147,20 +146,20 @@ namespace Compiler
                 int arSize = 0;
                 int offSet = 0;
                 tCodeLine += returnStrArr[0];
-                if (nextLbl != "") 
+                if (nextLbl != "")
                 {
                     tCodeLine += nextLbl;
                     nextLbl = "";
                 }
-                if (tCodeLine.Length != 0) 
+                if (tCodeLine.Length != 0)
                 {
-                    tCodeLine += " "; 
+                    tCodeLine += " ";
                 }
-                switch (returnStrArr[1]) 
+                switch (returnStrArr[1])
                 {
                     case "FRAME":
                         // Create activation record
-                        tCodeLine += "MOV R5 SP // FRAME " + returnStrArr[2];
+                        tCodeLine += "MOV R5 SP";
                         sr.WriteLine(tCodeLine);
                         sr.WriteLine("MOV R0 FP");
                         sr.WriteLine("ADI R5 #-4"); // This puts us at our PFP (return value should be below this on the AR stack) this should also point to our current AR location
@@ -192,7 +191,7 @@ namespace Compiler
                             sr.WriteLine("ADI R6 #" + offSet);
                             sr.WriteLine("LDR R6 (R6)");
                         }
-                        sr.WriteLine("STR R6 (R5) // END FRAME");
+                        sr.WriteLine("STR R6 (R5)");
                         calledFunc = returnStrArr[2]; // This if for debugging
                         paramOffset = -12;
                         // TODO: IF WE ARE IN AN OBJECT WE MEED TO SET "THIS" ON OUR FUNCTION FP = return, FP -4 = PFP, FP - 8 = this 
@@ -200,7 +199,7 @@ namespace Compiler
 
                         break;
                     case "CALL":
-                        tCodeLine += "MOV R5 PC // BEGIN METHOD CALL + " + calledFunc;
+                        tCodeLine += "MOV R5 PC";
                         sr.WriteLine(tCodeLine);
                         sr.WriteLine("ADI R5 #20");
                         sr.WriteLine("MOV FP SP"); // Updating the FP to the new SP
@@ -212,7 +211,7 @@ namespace Compiler
                         sr.WriteLine("MOV SP FP"); // move SP back to FP and then set the FP to the PFP
                         sr.WriteLine("ADI R2 #-4"); // R2 is now the address of our pfp
                         sr.WriteLine("LDR R2 (R2)");
-                        sr.WriteLine("MOV FP R2 // END CALL"); // move the PFP value into our FP
+                        sr.WriteLine("MOV FP R2"); // move the PFP value into our FP
                         calledFunc = ""; // reset this after we call the function
                         paramOffset = -12;
                         break;
@@ -225,7 +224,7 @@ namespace Compiler
                         {
                             arSize = symbolHashSet[returnStrArr[2]].byteSize;
                         }
-                        catch (KeyNotFoundException e) 
+                        catch (KeyNotFoundException e)
                         {
                             arSize = 0;
                         }// get the size of the activation record (stored in symbol table)
@@ -245,7 +244,7 @@ namespace Compiler
                             sr.WriteLine("ADI R4 #" + offSet); // get location in heap (we are storing to here)
 
                         }
-                        else if (returnStrArr[2][0] == 'R') 
+                        else if (returnStrArr[2][0] == 'R')
                         {
                             // handle an array here 
                             tCodeLine += "MOV R4 FP";
@@ -262,7 +261,7 @@ namespace Compiler
 
                         // Now find location of the right set
                         offSet = getLoc(returnStrArr[3]);
-                        if (IsGlobal(symbolHashSet[returnStrArr[3]]))
+                        if (returnStrArr[3] != "this" && IsGlobal(symbolHashSet[returnStrArr[3]]))
                         {
                             // just move the global in R0 and then store
                             if (symbolHashSet[returnStrArr[3]].data[0][1] != "char")
@@ -275,6 +274,13 @@ namespace Compiler
                                 sr.WriteLine("LDB R0 " + returnStrArr[3]);
                                 sr.WriteLine("STB R0 (R4)");
                             }
+                        }
+                        else if (returnStrArr[3] != "this") 
+                        {
+                            sr.WriteLine("MOV R0 FP");
+                            sr.WriteLine("ADI R0 #-8");
+                            sr.WriteLine("LDR R0 (R0)"); // We now have the ref location for this
+                            sr.WriteLine("STR R0 (R4)");
                         }
                         else
                         {
@@ -320,14 +326,14 @@ namespace Compiler
                                 // if it nested load one more time (note: consider loop for handling more than one instance of nesting)
                                 sr.WriteLine("TRP 1");
                             }
-                            else 
-                            {                                
+                            else
+                            {
                                 // HANDLE REFS
                                 tCodeLine += "MOV R3 FP";
                                 sr.WriteLine(tCodeLine);
                                 sr.WriteLine("ADI R3 #" + offSet);
-                                sr.WriteLine("LDR R3 (R3) // assumed ref var");
-                                if (symbolHashSet[returnStrArr[2]].data[0][1] != "int" && symbolHashSet[returnStrArr[2]].data[0][1] != "char" && symbolHashSet[returnStrArr[2]].data[0][1] != "bool") 
+                                sr.WriteLine("LDR R3 (R3)");
+                                if (symbolHashSet[returnStrArr[2]].data[0][1] != "int" && symbolHashSet[returnStrArr[2]].data[0][1] != "char" && symbolHashSet[returnStrArr[2]].data[0][1] != "bool")
                                 {
                                     sr.WriteLine("LDR R3 (R3)");
                                 }
@@ -340,7 +346,6 @@ namespace Compiler
                         offSet = getLoc(returnStrArr[2]);
                         if (IsGlobal(symbolHashSet[returnStrArr[2]]))
                         {
-
                             tCodeLine += "LDB R3 " + returnStrArr[2];
                             sr.WriteLine(tCodeLine);
                             sr.WriteLine("TRP 3");
@@ -374,7 +379,10 @@ namespace Compiler
                                 tCodeLine += "MOV R3 FP";
                                 sr.WriteLine(tCodeLine);
                                 sr.WriteLine("ADI R3 #" + offSet);
-                                sr.WriteLine("LDR R3 (R3)");
+                                if (symbolHashSet[returnStrArr[2]].data[0][1] != "int" && symbolHashSet[returnStrArr[2]].data[0][1] != "char" && symbolHashSet[returnStrArr[2]].data[0][1] != "bool")
+                                {
+                                    sr.WriteLine("LDR R3 (R3)");
+                                }
                                 sr.WriteLine("LDB R3 (R3)");
                                 sr.WriteLine("TRP 3");
                             }
@@ -398,9 +406,9 @@ namespace Compiler
                             tCodeLine += "LDR R3 " + returnStrArr[2];
                             sr.WriteLine(tCodeLine);
                         }
-                        else if (returnStrArr[2] == "this") 
+                        else if (returnStrArr[2] == "this")
                         {
-                            tCodeLine += "MOV R3 FP // RETURN THIS";
+                            tCodeLine += "MOV R3 FP";
                             sr.WriteLine(tCodeLine);
                             sr.WriteLine("ADI R3 #-8");
                             sr.WriteLine("LDR R3 (R3)"); // Double check
@@ -426,7 +434,6 @@ namespace Compiler
                         // get first op
                         if (IsGlobal(symbolHashSet[returnStrArr[2]]))
                         {
-
                             tCodeLine += "LDR R0 " + returnStrArr[2];
                             sr.WriteLine(tCodeLine);
                         }
@@ -450,11 +457,11 @@ namespace Compiler
                             sr.WriteLine("LDR R1 (R1)");
                         }
                         // Perform action
-                        if (returnStrArr[1] == "ADD") 
+                        if (returnStrArr[1] == "ADD")
                         {
                             sr.WriteLine("ADD R0 R1");
-                        } 
-                        else if (returnStrArr[1] == "SUB") 
+                        }
+                        else if (returnStrArr[1] == "SUB")
                         {
                             sr.WriteLine("SUB R0 R1");
                         }
@@ -482,8 +489,14 @@ namespace Compiler
                         offSet = getLoc(returnStrArr[2]);
                         if (IsGlobal(symbolHashSet[returnStrArr[2]]))
                         {
-
-                            tCodeLine += "LDR R0 " + returnStrArr[2];
+                            if (symbolHashSet[returnStrArr[3]].data[0][1] != "char")
+                            {
+                                tCodeLine += "LDR R0 " + returnStrArr[3];
+                            }
+                            else
+                            {
+                                tCodeLine += "LDB R0 " + returnStrArr[3];
+                            }
                             sr.WriteLine(tCodeLine);
                         }
                         else
@@ -497,7 +510,14 @@ namespace Compiler
                         offSet = getLoc(returnStrArr[3]);
                         if (IsGlobal(symbolHashSet[returnStrArr[3]]))
                         {
-                            sr.WriteLine("LDR R1 " + returnStrArr[3]);
+                            if (symbolHashSet[returnStrArr[3]].data[0][1] != "char")
+                            {
+                                sr.WriteLine("LDR R1 " + returnStrArr[3]);
+                            }
+                            else 
+                            {
+                                sr.WriteLine("LDB R1 " + returnStrArr[3]);
+                            }
                         }
                         else
                         {
@@ -510,8 +530,8 @@ namespace Compiler
                         if (returnStrArr[1] == "GT")
                         {
                             sr.WriteLine("BGT R0 L" + internlLblCnt);
-                        } 
-                        else if (returnStrArr[1] == "LT") 
+                        }
+                        else if (returnStrArr[1] == "LT")
                         {
                             sr.WriteLine("BLT R0 L" + internlLblCnt);
                         }
@@ -565,7 +585,7 @@ namespace Compiler
                             sr.WriteLine("ADI R1 #" + offSet);
                             sr.WriteLine("LDR R1 (R1)");
                         }
-                        
+
                         sr.WriteLine("BRZ R0 " + returnStrArr[3]);
                         break;
                     case "PUSH":
@@ -575,7 +595,7 @@ namespace Compiler
                         sr.WriteLine("ADI R1 #" + paramOffset);
                         paramOffset -= 4;
                         // Get the Value we want to store
-                        if (returnStrArr[2] == "this") 
+                        if (returnStrArr[2] == "this")
                         {
                             sr.WriteLine("LDR R0 FP");
                             sr.WriteLine("ADI R0 #-8");
@@ -594,7 +614,7 @@ namespace Compiler
                             sr.WriteLine("ADI R0 #" + offSet);
                             sr.WriteLine("LDR R0 (R0)");
                         }
-                        sr.WriteLine("STR R0 (R1) // END PUSH");
+                        sr.WriteLine("STR R0 (R1)");
                         break;
                     case "PEEK":
                         // after a function call peek the top value and store it on the temp 29 var
@@ -606,7 +626,7 @@ namespace Compiler
                         offSet = getLoc(returnStrArr[2]);
                         sr.WriteLine("LDR R1 FP");
                         sr.WriteLine("ADI R1 #" + offSet);
-                        sr.WriteLine("STR R2 (R1) // END PEEK");
+                        sr.WriteLine("STR R2 (R1)");
                         // The value of the method call should now be stored at the temp var in the function
                         break;
                     case "JMP":
@@ -702,6 +722,7 @@ namespace Compiler
                         sr.WriteLine("MOV R2 FP");
                         sr.WriteLine("ADI R2 #" + offSet);
                         sr.WriteLine("STB R3 (R2)");
+                        // if we don't have a return;
                         break;
                     case "NEWI":
                         // Ex: NEWI T30 12, store corrent heap location in T30 and push the heap pointer down 12 bytes
@@ -717,7 +738,7 @@ namespace Compiler
                         sr.WriteLine("ADI R1 #" + offSet);
                         // Store Heap Loc in temp var
 
-                        sr.WriteLine("STR R7 (R1)");                        
+                        sr.WriteLine("STR R7 (R1)");
                         offSet = getLoc(returnStrArr[2]);
                         break;
                     case "NEW":
@@ -748,7 +769,7 @@ namespace Compiler
                         sr.WriteLine("ADI R0 #" + offSet);
                         sr.WriteLine("LDR R0 (R0)"); // R0 now contains the address stored by the temp var
                         bool nestie = false;
-                        if (symbolHashSet[returnStrArr[4]].lexeme.Contains(".")) 
+                        if (symbolHashSet[returnStrArr[4]].lexeme.Contains("."))
                         {
                             nestie = true;
                             //sr.WriteLine("LDB R3 H109");
@@ -758,7 +779,7 @@ namespace Compiler
                             //sr.WriteLine("TRP 1");
                             //sr.WriteLine("LDB R3 H109");
                             //sr.WriteLine("TRP 3");
-                            
+
                             // We enter this if we are getting a nested ref
                             sr.WriteLine("LDR R0 (R0)");
 
@@ -786,20 +807,20 @@ namespace Compiler
                         // CHecking
                         // Get the data at the location
                         sr.WriteLine("LDR R1 (R0)"); // R1 now contains the value in the heap WE DONT NEED TO CHECK IF IT IS A CHAR BECAUSE IT STILL TAKES 4 BYTES ON AR, we just wont use whatever the other 3 bytes we get after the location are
-                        
-                        
+
+
 
                         // We now need to store the R0 value at the temporary Rtype offset
                         offSet = getLoc(returnStrArr[4]);
                         sr.WriteLine("MOV R2 FP");
                         sr.WriteLine("ADI R2 #" + offSet);
-                        if (nestie) 
+                        if (nestie)
                         {
                             sr.WriteLine("STR R0 (R2)"); // we store the value at R1 into the location at R2, our referance in the AR now contains the val we want
                             break;
                         }
                         sr.WriteLine("STR R1 (R2)"); // we store the value at R1 into the location at R2, our referance in the AR now contains the val we want
-                        
+
                         break;
                     case "AEF":
                         // Ex AEF L130 N126 R19 
@@ -811,7 +832,7 @@ namespace Compiler
                             sr.WriteLine("ADI R0 #" + offSet);
                             sr.WriteLine("LDR R0 (R0)"); // R0 now contains the address of our var on the heap
                         }
-                        else 
+                        else
                         {
                             tCodeLine += "MOV R0 FP";
                             sr.WriteLine(tCodeLine);
@@ -836,7 +857,7 @@ namespace Compiler
                             offSet = getLoc(returnStrArr[3]);
                             // Our index is on the AR
                             if (symbolHashSet[returnStrArr[3]].curOffset < 0)
-                            { 
+                            {
                                 sr.WriteLine("MOV R1 FP");
                                 sr.WriteLine("ADI R1 #" + offSet);
                                 sr.WriteLine("LDR R1 (R1)"); // We have the value of the index in R1
@@ -848,7 +869,7 @@ namespace Compiler
                                 }
                                 sr.WriteLine("ADD R0 R1"); // R0 is now the specific location in the array of our int or object address
                             }
-                            else 
+                            else
                             {
                                 // Our index is on the heap 
                                 sr.WriteLine("MOV R1 FP");
@@ -878,7 +899,7 @@ namespace Compiler
 
         public bool IsGlobal(Symbol s)
         {
-            if ((s.symid == "true" || s.symid == "false" || s.symid == "null" || s.kind == "ilit" || s.kind == "clit") && (s.symid[0] != 'T' && s.symid[0] != 'R')) 
+            if ((s.symid == "true" || s.symid == "false" || s.symid == "null" || s.kind == "ilit" || s.kind == "clit") && (s.symid[0] != 'T' && s.symid[0] != 'R'))
             {
                 return true;
             }

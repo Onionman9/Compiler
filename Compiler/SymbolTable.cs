@@ -55,7 +55,7 @@ namespace Compiler
         {
             parsie.Update();
             // Pre load symbol table
-            addSymbol = new Symbol(scopeString(), "true","true","true");
+            addSymbol = new Symbol(scopeString(), "true", "true", "true");
             addSymbol.data[0].Add("type: ");
             addSymbol.data[0].Add("bool");
             addSymbol.data[1].Add("accessMod: ");
@@ -104,6 +104,17 @@ namespace Compiler
             symbolHashSet.Add(addSymbol.symid, addSymbol);
             symbolCounter++;
 
+            // The Literal 1 because out cin and needs to wait for enter before it breaks it's loop
+
+            addSymbol = new Symbol("g", "N" + symbolCounter, "10", "ilit");
+            addSymbol.data[0].Add("type: ");
+            addSymbol.data[0].Add("int");
+            addSymbol.data[1].Add("accessMod: ");
+            addSymbol.data[1].Add("public");
+            addSymbol.byteSize = 4;
+            symbolHashSet.Add(addSymbol.symid, addSymbol);
+            symbolCounter++;
+
 
             Compiliation_Unit();
 
@@ -114,12 +125,12 @@ namespace Compiler
 
             /*
                 Semnatic Analysis
-             */            
+             */
             secondPass = true;
             parsie.ETreader.Close();
             parsie = new ETparser();
             parsie.Update();
-            semanticAnalyzer = new SAS(symbolHashSet,quad, classes);
+            semanticAnalyzer = new SAS(symbolHashSet, quad, classes);
             // SECOND PASS
             Compiliation_Unit();
             /*
@@ -150,10 +161,10 @@ namespace Compiler
         /*
             Scope to string
          */
-        private string scopeString() 
+        private string scopeString()
         {
             string retString = scopeLevel[0];
-            for (int i = 1; i < scopeLevel.Count; i++) 
+            for (int i = 1; i < scopeLevel.Count; i++)
             {
                 retString += "." + scopeLevel[i];
             }
@@ -162,17 +173,17 @@ namespace Compiler
         /*
             Compiliation Unit 
          */
-        private void Compiliation_Unit() 
+        private void Compiliation_Unit()
         {
-            if (secondPass) 
+            if (secondPass)
             {
                 // build initial call to main in quad table
-                quad.AddRow("","FRAME","main","null","","");
-                quad.AddRow("","CALL","main","","","");
+                quad.AddRow("", "FRAME", "main", "null", "", "");
+                quad.AddRow("", "CALL", "main", "", "", "");
                 quad.AddRow("", "EXIT", "main", "", "", "");
             }
             // 0 or more instances of class Declarations
-            while (parsie.tokenArr[0].lexeme == "class") 
+            while (parsie.tokenArr[0].lexeme == "class")
             {
                 ClassDeclaration();
             }
@@ -189,11 +200,11 @@ namespace Compiler
                         addSymbol = new Symbol(scopeString(), "main", "main", "main");
                         methodScope = scopeString();
                         scopeLevel.Add("main");
-                        if (secondPass) 
+                        if (secondPass)
                         {
                             semanticAnalyzer.scope = scopeString();
                         }
-                        
+
                         parsie.Update();
                         if (parsie.tokenArr[0].thisType == TokenType.PARENTHESES_OPEN)
                         {
@@ -253,10 +264,10 @@ namespace Compiler
                                 {
                                     semanticAnalyzer.insideMethod = insideMethod;
                                 }
-                                if (secondPass) 
+                                if (secondPass)
                                 {
-                                    quad.AddRow("","RTN","","","","");
-                                   //  quad.BackPatch("SKIPIF4","TESTLABEL"); BACK PATCH TEST UNCOMMENT AND CHANGE SKIPIF4 TO DESIRED TEST LABEL
+                                    quad.AddRow("", "RTN", "", "", "", "");
+                                    //  quad.BackPatch("SKIPIF4","TESTLABEL"); BACK PATCH TEST UNCOMMENT AND CHANGE SKIPIF4 TO DESIRED TEST LABEL
                                 }
                             }
                             else
@@ -286,7 +297,7 @@ namespace Compiler
                     genError(parsie.tokenArr[0].lineNum, parsie.tokenArr[0].lexeme, "kxi2021");
                 }
             }
-            else 
+            else
             {
                 genError(parsie.tokenArr[0].lineNum, parsie.tokenArr[0].lexeme, "void");
             }
@@ -308,7 +319,7 @@ namespace Compiler
                     semanticAnalyzer.quad = sQuad;
                     sQuad.AddRow(parsie.tokenArr[1].lexeme + "StaticInit", "FUNC", parsie.tokenArr[1].lexeme + "StaticInit", "", "", "");
                     // add staticInit method to the symTable
-                    Symbol s = new Symbol(scopeString(),parsie.tokenArr[1].lexeme + "StaticInit", parsie.tokenArr[1].lexeme + "StaticInit","method");
+                    Symbol s = new Symbol(scopeString(), parsie.tokenArr[1].lexeme + "StaticInit", parsie.tokenArr[1].lexeme + "StaticInit", "method");
                     s.byteSize = -12;
                     symbolHashSet.Add(parsie.tokenArr[1].lexeme + "StaticInit", s);
 
@@ -372,7 +383,7 @@ namespace Compiler
 
                         curClass = "";
                     }
-                    else if (classes.Contains(parsie.tokenArr[0].lexeme) && secondPass) 
+                    else if (classes.Contains(parsie.tokenArr[0].lexeme) && secondPass)
                     {
                         curClass = parsie.tokenArr[0].lexeme;
                         // Proceed in scope
@@ -455,7 +466,7 @@ namespace Compiler
                 parsie.Update();
                 if (parsie.tokenArr[0].thisType == TokenType.IDENTIFIER || parsie.tokenArr[0].lexeme == "int" || parsie.tokenArr[0].lexeme == "bool" || parsie.tokenArr[0].lexeme == "char" || parsie.tokenArr[0].lexeme == "sym" || parsie.tokenArr[0].lexeme == "void")
                 {
-                    if (secondPass && parsie.tokenArr[0].thisType == TokenType.IDENTIFIER) 
+                    if (secondPass && parsie.tokenArr[0].thisType == TokenType.IDENTIFIER)
                     {
                         if (!classes.Contains(parsie.tokenArr[0].lexeme))
                         {
@@ -464,7 +475,7 @@ namespace Compiler
                     }
                     // Everything takes up 4 bytes, aside from chars. Arrays and class objects will have a 4 byte reference to their location in heap
                     byteSize = 4;
-                    if (parsie.tokenArr[0].lexeme == "char") 
+                    if (parsie.tokenArr[0].lexeme == "char")
                     {
                         byteSize = 1;
                     }
@@ -472,7 +483,7 @@ namespace Compiler
                     // Check if it is an array
                     if (parsie.tokenArr[1].thisType == TokenType.ARRAY_BEGIN)
                     {
-                        if (secondPass) 
+                        if (secondPass)
                         {
                             if (!classes.Contains(parsie.tokenArr[0].lexeme) && !(parsie.tokenArr[0].lexeme == "int" || parsie.tokenArr[0].lexeme == "bool" || parsie.tokenArr[0].lexeme == "char" || parsie.tokenArr[0].lexeme == "sym" || parsie.tokenArr[0].lexeme == "void"))
                             {
@@ -493,7 +504,7 @@ namespace Compiler
                         }
                         addSymbol.data[0].Insert(1, "@:");
                     }
-                    else 
+                    else
                     {
                         parsie.Update();
                     }
@@ -504,7 +515,7 @@ namespace Compiler
                         // NOTE: This is where our scope would be defined for field declaration
                         addSymbol.lexeme = parsie.tokenArr[0].lexeme;
                         idenName = parsie.tokenArr[0].lexeme;
-                        if (secondPass) 
+                        if (secondPass)
                         {
                             semanticAnalyzer.VPush(parsie.tokenArr[0], scopeLevel);
                         }
@@ -535,12 +546,12 @@ namespace Compiler
                 addSymbol = new Symbol(scopeString(), "X" + symbolCounter, parsie.tokenArr[0].lexeme, "constructor");
                 // Check for Duplicate
                 int constructorCount = 0;
-                if (constError) 
+                if (constError)
                 {
                     genSAMErrorDupConst(parsie.tokenArr[0].lineNum, parsie.tokenArr[0].lexeme);
                 }
 
-                if (secondPass) 
+                if (secondPass)
                 {
                     foreach (KeyValuePair<string, Symbol> s in symbolHashSet)
                     {
@@ -559,7 +570,7 @@ namespace Compiler
                 {
                     symbolCounter++;
                 }
-                addSymbol.data[0].Add("returnType: "); 
+                addSymbol.data[0].Add("returnType: ");
                 addSymbol.data[0].Add(parsie.tokenArr[0].lexeme);
                 addSymbol.data[1].Add("param: [");
                 addSymbol.curOffset = curClassOffset;
@@ -582,13 +593,13 @@ namespace Compiler
         /*
             Constructor Declaration
          */
-        private void Constructor_Declaration() 
+        private void Constructor_Declaration()
         {
-            if (parsie.tokenArr[0].thisType == TokenType.IDENTIFIER) 
+            if (parsie.tokenArr[0].thisType == TokenType.IDENTIFIER)
             {
 
                 string idenName = addSymbol.lexeme;
-                if (secondPass) 
+                if (secondPass)
                 {
                     if (idenName != curClass)
                     {
@@ -617,7 +628,7 @@ namespace Compiler
                 }
                 string curLevel = parsie.tokenArr[0].lexeme;
                 int curLine = parsie.tokenArr[0].lineNum;
-                if (parsie.tokenArr[0].lexeme != scopeLevel[scopeLevel.Count - 1]) 
+                if (parsie.tokenArr[0].lexeme != scopeLevel[scopeLevel.Count - 1])
                 {
                     genSAMConst(parsie.tokenArr[0].lineNum, parsie.tokenArr[0].lexeme, scopeLevel[scopeLevel.Count - 1]);
                 }
@@ -669,7 +680,7 @@ namespace Compiler
 
                                         if (dupFlag)
                                         {
-                                            genSAMErrorDupConst(curLine, scopeLevel[scopeLevel.Count -1]);
+                                            genSAMErrorDupConst(curLine, scopeLevel[scopeLevel.Count - 1]);
                                         }
                                     }
                                     else
@@ -739,28 +750,28 @@ namespace Compiler
                         quad = sQuad;
                         semanticAnalyzer.quad = sQuad;
                     }
-                } 
-                else if (parsie.tokenArr[0].thisType == TokenType.PARENTHESES_OPEN && parsie.tokenArr[1].thisType == TokenType.PARENTHESES_CLOSE) 
+                }
+                else if (parsie.tokenArr[0].thisType == TokenType.PARENTHESES_OPEN && parsie.tokenArr[1].thisType == TokenType.PARENTHESES_CLOSE)
                 {
                     addSymbol.data[1].Add("]");
 
                     if (!secondPass)
                     {
-                        foreach(KeyValuePair<string, Symbol> s in symbolHashSet) 
+                        foreach (KeyValuePair<string, Symbol> s in symbolHashSet)
                         {
                             if (addSymbol.lexeme != s.Value.lexeme)
                             {
                                 continue;
                             }
-                            else 
+                            else
                             {
                                 // Check Scope 
-                                if (s.Value.scope != addSymbol.scope) 
+                                if (s.Value.scope != addSymbol.scope)
                                 {
                                     continue;
                                 }
                                 // Verify they are both constructors
-                                if (s.Value.symid[0] == addSymbol.symid[0]) 
+                                if (s.Value.symid[0] == addSymbol.symid[0])
                                 {
                                     // verify params are different
                                     if (s.Value.data[1].Count == addSymbol.data[1].Count)
@@ -785,14 +796,14 @@ namespace Compiler
                                             tempCounter++;
                                         }
 
-                                        if (dupFlag) 
+                                        if (dupFlag)
                                         {
                                             genSAMErrorDupConst(curLine, scopeLevel[scopeLevel.Count - 1]);
                                         }
                                     }
-                                    else 
+                                    else
                                     {
-                                    
+
                                     }
                                 }
                             }
@@ -858,7 +869,7 @@ namespace Compiler
                     semanticAnalyzer.scope = scopeString();
                 }
             }
-            else 
+            else
             {
                 genError(parsie.tokenArr[0].lineNum, parsie.tokenArr[0].lexeme, "classname");
             }
@@ -900,7 +911,7 @@ namespace Compiler
                 AssignmentExpression();
                 if (parsie.tokenArr[0].lexeme == ";")
                 {
-                    if (secondPass) 
+                    if (secondPass)
                     {
                         semanticAnalyzer.comment = parsie.commentLine;
                         parsie.commentLine = "";
@@ -909,24 +920,24 @@ namespace Compiler
                     }
                     parsie.Update();
                 }
-                else 
+                else
                 {
                     genError(parsie.tokenArr[0].lineNum, parsie.tokenArr[0].lexeme, ";");
                 }
-            } 
-            else if (parsie.tokenArr[0].lexeme == "(") 
+            }
+            else if (parsie.tokenArr[0].lexeme == "(")
             {
                 // Verify this method is not the same name as class ()
                 if (idenName == curClass)
                 {
                     genError(parsie.tokenArr[0].lineNum, idenName, "identifier");
                 }
-                else if (secondPass && classes.Contains(idenName)) 
+                else if (secondPass && classes.Contains(idenName))
                 {
                     genError(parsie.tokenArr[0].lineNum, idenName, "identifier");
                 }
                 // Write the func start                
-                parsie.Update();                
+                parsie.Update();
                 if (parsie.tokenArr[0].lexeme == ")")
                 {
                     parsie.Update();
@@ -936,13 +947,13 @@ namespace Compiler
                     {
                         symbolCounter++;
                     }
-                    else 
+                    else
                     {
                         /*
                          find the method here
                          */
                         string s = FindMethodSymId(scopeString(), idenName);
-                        if (s != "") 
+                        if (s != "")
                         {
                             quad = permQuadPointer;
                             semanticAnalyzer.quad = permQuadPointer;
@@ -953,7 +964,7 @@ namespace Compiler
                     addSymbol.data[2] = addSymbol.data[1];
                     addSymbol.data[1] = new List<string>();
                     addSymbol.data[1].Add("Param: [");
-                    if (insideClass) 
+                    if (insideClass)
                     {
                         addSymbol.curOffset = curClassOffset;
                     }
@@ -968,7 +979,7 @@ namespace Compiler
 
                     if (!secondPass)
                     {
-                        if (insideClass) 
+                        if (insideClass)
                         {
                             addSymbol.curOffset = curClassOffset;
                         }
@@ -989,7 +1000,7 @@ namespace Compiler
                     Symbol methodPointer = addSymbol;
                     // if we are in the second pass set the methodPointer == to the current methods size so the offsets for the temp variables are accurate
                     if (secondPass)
-                    {                        
+                    {
                         foreach (KeyValuePair<string, Symbol> s in symbolHashSet)
                         {
                             if (s.Value.lexeme == methodPointer.lexeme && methodScope == s.Value.scope)
@@ -1001,7 +1012,7 @@ namespace Compiler
                             }
                         }
                     }
-                    
+
                     Method_body();
                     // If not return put a 
                     if (secondPass)
@@ -1034,7 +1045,7 @@ namespace Compiler
                         semanticAnalyzer.scope = scopeString();
                     }
                 }
-                else 
+                else
                 {
                     addSymbol.kind = "method";
                     addSymbol.symid = "M" + symbolCounter;
@@ -1085,9 +1096,9 @@ namespace Compiler
                     if (parsie.tokenArr[0].lexeme == ")")
                     {
                         parsie.Update();
-                        if (secondPass) 
+                        if (secondPass)
                         {
-                            commentRow[5] = commentRow[5].ToString() + parsie.commentLine.Remove(0,3);
+                            commentRow[5] = commentRow[5].ToString() + parsie.commentLine.Remove(0, 3);
                         }
                     }
                     else
@@ -1123,16 +1134,16 @@ namespace Compiler
                     {
                         methodPointer.byteSize = semanticAnalyzer.tempVarOffset; // final size with temps included
                     }
-                    else 
+                    else
                     {
                         methodPointer.byteSize = curMethodOffset; // it's actual size is byteSize *= -1;
                     }
-                    
+
                     insideMethod = false;
                     if (secondPass)
                     {
-                        if (!(quad.GetBotRow()[1].ToString() == "RETURN" || quad.GetBotRow()[1].ToString() == "RTN")) 
-                        {    
+                        if (!(quad.GetBotRow()[1].ToString() == "RETURN" || quad.GetBotRow()[1].ToString() == "RTN"))
+                        {
                             quad.AddRow("", "RTN", "", "", "", "");
                         }
                         quad = sQuad;
@@ -1154,14 +1165,14 @@ namespace Compiler
                             symbolHashSet.Add(s.symid, s);
                         }
                     }
-                    else 
+                    else
                     {
                         semanticAnalyzer.comment = parsie.commentLine;
                         parsie.commentLine = "";
                         semanticAnalyzer.EoE();
                     }
                 }
-                
+
             }
             else if (parsie.tokenArr[0].lexeme == ";")
             {
@@ -1195,11 +1206,11 @@ namespace Compiler
         /*
             Parameter List Function
          */
-        private void Parameter_List() 
+        private void Parameter_List()
         {
             tempSymbols = new List<Symbol>(); // reset for next list
             Parameter();
-            while (parsie.tokenArr[0].lexeme == ",") 
+            while (parsie.tokenArr[0].lexeme == ",")
             {
                 parsie.Update();
                 Parameter();
@@ -1208,10 +1219,10 @@ namespace Compiler
         /*
             Parameter Function
          */
-        private void Parameter() 
+        private void Parameter()
         {
             // add to Addsymbol Data + Symbol table
-            Symbol tempieSym = new Symbol(scopeString(),"P" + symbolCounter,"","param");
+            Symbol tempieSym = new Symbol(scopeString(), "P" + symbolCounter, "", "param");
             tempieSym.data[1].Add("accessMod: ");
             tempieSym.data[1].Add("private");
             if (!secondPass)
@@ -1223,7 +1234,7 @@ namespace Compiler
                 tempieSym.data[0].Add("type: ");
                 tempieSym.data[0].Add(parsie.tokenArr[0].lexeme);
                 // TExists
-                if (secondPass && !classes.Contains(parsie.tokenArr[0].lexeme) && parsie.tokenArr[0].lexeme != "int" && parsie.tokenArr[0].lexeme != "bool" && parsie.tokenArr[0].lexeme != "char" && parsie.tokenArr[0].lexeme != "sym" && parsie.tokenArr[0].lexeme != "void") 
+                if (secondPass && !classes.Contains(parsie.tokenArr[0].lexeme) && parsie.tokenArr[0].lexeme != "int" && parsie.tokenArr[0].lexeme != "bool" && parsie.tokenArr[0].lexeme != "char" && parsie.tokenArr[0].lexeme != "sym" && parsie.tokenArr[0].lexeme != "void")
                 {
                     genErrorTExist(parsie.tokenArr[0].lineNum, parsie.tokenArr[0].lexeme);
                 }
@@ -1240,7 +1251,7 @@ namespace Compiler
                     {
                         genError(parsie.tokenArr[0].lineNum, parsie.tokenArr[0].lexeme, "]");
                     }
-                    tempieSym.data[0].Insert(1,"@:");
+                    tempieSym.data[0].Insert(1, "@:");
                 }
                 // Check Identifier
                 if (parsie.tokenArr[0].thisType == TokenType.IDENTIFIER)
@@ -1271,19 +1282,19 @@ namespace Compiler
         /*
             Method Body Function for method body
          */
-        private void Method_body() 
+        private void Method_body()
         {
             if (parsie.tokenArr[0].thisType == TokenType.BLOCK_BEGIN)
             {
                 parsie.Update();
-                if (secondPass) 
+                if (secondPass)
                 {
                     semanticAnalyzer.firstRowComment = true;
                 }
                 // 0 or more variable declaration
-                while ((parsie.tokenArr[0].thisType == TokenType.IDENTIFIER || parsie.tokenArr[0].lexeme == "int" || parsie.tokenArr[0].lexeme == "bool" || parsie.tokenArr[0].lexeme == "char" || parsie.tokenArr[0].lexeme == "sym" || parsie.tokenArr[0].lexeme == "void") && parsie.tokenArr[1].lexeme != "=") 
+                while ((parsie.tokenArr[0].thisType == TokenType.IDENTIFIER || parsie.tokenArr[0].lexeme == "int" || parsie.tokenArr[0].lexeme == "bool" || parsie.tokenArr[0].lexeme == "char" || parsie.tokenArr[0].lexeme == "sym" || parsie.tokenArr[0].lexeme == "void") && parsie.tokenArr[1].lexeme != "=")
                 {
-                    if (parsie.tokenArr[1].thisType == TokenType.ARRAY_BEGIN && parsie.tokenArr[2].thisType != TokenType.ARRAY_END) 
+                    if (parsie.tokenArr[1].thisType == TokenType.ARRAY_BEGIN && parsie.tokenArr[2].thisType != TokenType.ARRAY_END)
                     {
                         break;
                     }
@@ -1291,7 +1302,7 @@ namespace Compiler
                     {
                         break;
                     }
-                    if (parsie.tokenArr[1].lexeme == "(") 
+                    if (parsie.tokenArr[1].lexeme == "(")
                     {
                         break;
                     }
@@ -1301,7 +1312,7 @@ namespace Compiler
                     }
                 }
                 // 0 or more statements
-                while (IsStatementStart(parsie.tokenArr[0])) 
+                while (IsStatementStart(parsie.tokenArr[0]))
                 {
                     Statement();
                 }
@@ -1310,12 +1321,12 @@ namespace Compiler
                 {
                     parsie.Update();
                 }
-                else 
+                else
                 {
                     genError(parsie.tokenArr[0].lineNum, parsie.tokenArr[0].lexeme, "}");
                 }
             }
-            else 
+            else
             {
                 genError(parsie.tokenArr[0].lineNum, parsie.tokenArr[0].lexeme, "{");
             }
@@ -1323,14 +1334,14 @@ namespace Compiler
         /*
             Variable Declaration function 
          */
-        private void Var_Declaration() 
+        private void Var_Declaration()
         {
-            addSymbol = new Symbol(scopeString(),"L" + symbolCounter,"","lvar");
+            addSymbol = new Symbol(scopeString(), "L" + symbolCounter, "", "lvar");
             if (!secondPass)
             {
                 symbolCounter++;
             }
-            else 
+            else
             {
                 parsie.commentLine = "";
             }
@@ -1342,7 +1353,7 @@ namespace Compiler
             {
                 if (parsie.tokenArr[0].lexeme == "int" || parsie.tokenArr[0].lexeme == "char" || parsie.tokenArr[0].lexeme == "bool" || parsie.tokenArr[0].lexeme == "void" || parsie.tokenArr[0].lexeme == "sym")
                 {
-                    if (secondPass) 
+                    if (secondPass)
                     {
                         semanticAnalyzer.TPush(parsie.tokenArr[0].lexeme);
                     }
@@ -1373,9 +1384,9 @@ namespace Compiler
             }
             else if (parsie.tokenArr[0].thisType == TokenType.IDENTIFIER)
             {
-                if (secondPass) 
+                if (secondPass)
                 {
-                    if (!classes.Contains(parsie.tokenArr[0].lexeme)) 
+                    if (!classes.Contains(parsie.tokenArr[0].lexeme))
                     {
                         // TExists
                         genErrorSAMType(parsie.tokenArr[0].lineNum, parsie.tokenArr[0].lexeme);
@@ -1393,7 +1404,7 @@ namespace Compiler
                     if (parsie.tokenArr[0].thisType == TokenType.ARRAY_END)
                     {
                         parsie.Update();
-                        addSymbol.data[0].Insert(1,"@:"); 
+                        addSymbol.data[0].Insert(1, "@:");
                         if (secondPass)
                         {
                             semanticAnalyzer.intializeArr = true;
@@ -1405,7 +1416,7 @@ namespace Compiler
                     }
                 }
             }
-            else 
+            else
             {
                 genError(parsie.tokenArr[0].lineNum, parsie.tokenArr[0].lexeme, "Keyword Type or Identifier");
             }
@@ -1424,20 +1435,20 @@ namespace Compiler
             // identifier portion of Variable dec
             if (parsie.tokenArr[0].thisType == TokenType.IDENTIFIER)
             {
-                if (secondPass) 
+                if (secondPass)
                 {
                     semanticAnalyzer.VPush(parsie.tokenArr[0], scopeLevel);
                 }
                 parsie.Update();
             }
-            else 
+            else
             {
                 genError(parsie.tokenArr[0].lineNum, parsie.tokenArr[0].lexeme, "identifier");
             }
             // assignment or semicolon
             if (parsie.tokenArr[0].lexeme == ";")
             {
-                if (secondPass) 
+                if (secondPass)
                 {
                     semanticAnalyzer.comment = parsie.commentLine;
                     parsie.commentLine = "";
@@ -1468,36 +1479,36 @@ namespace Compiler
                     genError(parsie.tokenArr[0].lineNum, parsie.tokenArr[0].lexeme, ";");
                 }
             }
-            else 
+            else
             {
                 genError(parsie.tokenArr[0].lineNum, parsie.tokenArr[0].lexeme, "assignment or ;");
             }
-            
-            
+
+
         }
         /*
             runs syntax analysis for a statement
          */
-        private void Statement() 
+        private void Statement()
         {
             parsie.commentLine = "";
 
-            if (secondPass) 
+            if (secondPass)
             {
                 semanticAnalyzer.firstRowComment = true;
             }
-            if (parsie.tokenArr[0].lexeme != "if") 
+            if (parsie.tokenArr[0].lexeme != "if")
             {
-                exitIf = false;   
+                exitIf = false;
             }
             if (parsie.tokenArr[0].thisType == TokenType.BLOCK_BEGIN)
             {
                 parsie.Update();
-                while (parsie.tokenArr[0].thisType != TokenType.BLOCK_END) 
+                while (parsie.tokenArr[0].thisType != TokenType.BLOCK_END)
                 {
                     Statement();
-                    if (parsie.tokenArr[0].thisType == TokenType.EOF) 
-                    {                        
+                    if (parsie.tokenArr[0].thisType == TokenType.EOF)
+                    {
                         genError(parsie.tokenArr[0].lineNum, parsie.tokenArr[0].lexeme, "}");
                     }
                 }
@@ -1518,7 +1529,7 @@ namespace Compiler
                     }
                 }
                 else
-                {               
+                {
                     genError(parsie.tokenArr[0].lineNum, parsie.tokenArr[0].lexeme, ";");
                 }
             }
@@ -1538,14 +1549,14 @@ namespace Compiler
                     Expression();
                     if (parsie.tokenArr[0].thisType == TokenType.PARENTHESES_CLOSE)
                     {
-                        parsie.Update();                    
+                        parsie.Update();
                     }
-                    else 
+                    else
                     {
                         genError(parsie.tokenArr[0].lineNum, parsie.tokenArr[0].lexeme, ")");
                     }
 
-                    if (secondPass) 
+                    if (secondPass)
                     {
                         semanticAnalyzer.comment = parsie.commentLine;
                         semanticAnalyzer.IfCheck(parsie.tokenArr[0].lineNum);
@@ -1554,19 +1565,19 @@ namespace Compiler
                     }
                     // Enter if
                     bool backPatchIf = false;
-                    if (exitIf == true) 
+                    if (exitIf == true)
                     {
                         backPatchIf = true;
                     }
                     Statement();
-                    if (secondPass) 
+                    if (secondPass)
                     {
                         quad.labelNext = true;
                     }
                     // optional else
-                    if (parsie.tokenArr[0].lexeme == "else") 
+                    if (parsie.tokenArr[0].lexeme == "else")
                     {
-                        if (secondPass) 
+                        if (secondPass)
                         {
                             if (quad.labelCounter == 10)
                             {
@@ -1579,7 +1590,7 @@ namespace Compiler
                             {
                                 quad.BackPatch(prevLabel, curLabel); // Back patch for chaing if else statements
                             }
-                            quad.AddRow("", "JMP", curLabel , "", "", "");
+                            quad.AddRow("", "JMP", curLabel, "", "", "");
                             quad.labelCounter++;
                             quad.labelNext = true;
                         }
@@ -1593,7 +1604,7 @@ namespace Compiler
                         }
                     }
                 }
-                else 
+                else
                 {
                     genError(parsie.tokenArr[0].lineNum, parsie.tokenArr[0].lexeme, "(");
                 }
@@ -1628,7 +1639,7 @@ namespace Compiler
 
                     Statement();
 
-                    if (secondPass) 
+                    if (secondPass)
                     {
                         if (quad.labelNext == true)
                         {
@@ -1637,14 +1648,14 @@ namespace Compiler
                             string sLab = quad.labelStack.Pop();
                             quad.AddRow(sLab, "JMP", quad.labelStack.Pop(), "", "", "");
                         }
-                        else 
+                        else
                         {
                             quad.AddRow("", "JMP", quad.labelStack.Pop(), "", "", "");
                         }
                         quad.labelNext = true; // force next line to have endWhile
                     }
                 }
-                else 
+                else
                 {
                     genError(parsie.tokenArr[0].lineNum, parsie.tokenArr[0].lexeme, "(");
                 }
@@ -1656,16 +1667,16 @@ namespace Compiler
                 if (secondPass && parsie.tokenArr[0].lexeme == ";")
                 {
                     // if we have return; the type is void so we don't need to push to the stack
-                } 
+                }
                 else if (secondPass && parsie.tokenArr[1].lexeme != ";" && parsie.tokenArr[1].lexeme != "=")
                 {
                     semanticAnalyzer.RetPush(scopeString()); // puts a return on the stack to pretend to be i = (return expression), it will have the same type as the containing method
                     semanticAnalyzer.OPush(new Token("=", TokenType.ASSIGNMENT_OPERATOR, parsie.tokenArr[0].lineNum));
-                } 
-                else if (secondPass && parsie.tokenArr[1].lexeme == ";") 
+                }
+                else if (secondPass && parsie.tokenArr[1].lexeme == ";")
                 {
                     semanticAnalyzer.RetPush(scopeString()); // puts a return on the stack to pretend to be i = (return expression), it will have the same type as the containing method
-                    semanticAnalyzer.OPush(new Token("=", TokenType.ASSIGNMENT_OPERATOR, parsie.tokenArr[0].lineNum));                    
+                    semanticAnalyzer.OPush(new Token("=", TokenType.ASSIGNMENT_OPERATOR, parsie.tokenArr[0].lineNum));
                 }
                 // Optional return expression
                 if (IsExpression(parsie.tokenArr[0]))
@@ -1676,14 +1687,14 @@ namespace Compiler
                 if (parsie.tokenArr[0].lexeme == ";")
                 {
                     parsie.Update();
-                    if (secondPass) 
+                    if (secondPass)
                     {
                         semanticAnalyzer.comment = parsie.commentLine;
                         parsie.commentLine = "";
                         semanticAnalyzer.EoE();
                     }
                 }
-                else 
+                else
                 {
                     genError(parsie.tokenArr[0].lineNum, parsie.tokenArr[0].lexeme, ";");
                 }
@@ -1692,7 +1703,7 @@ namespace Compiler
             // Statement cout
             else if (parsie.tokenArr[0].lexeme == "cout")
             {
-                if (secondPass) 
+                if (secondPass)
                 {
                     semanticAnalyzer.IPush(parsie.tokenArr[0], scopeLevel);
                 }
@@ -1704,14 +1715,14 @@ namespace Compiler
                     if (secondPass)
                     {
                         // push an equals
-                        Token temp = new Token("=",TokenType.ASSIGNMENT_OPERATOR, parsie.tokenArr[0].lineNum);
+                        Token temp = new Token("=", TokenType.ASSIGNMENT_OPERATOR, parsie.tokenArr[0].lineNum);
                         semanticAnalyzer.OPush(temp);
-                    } 
+                    }
                     Expression();
                 }
-                else 
+                else
                 {
-                    if (parsie.tokenArr[1].lexeme == ">") 
+                    if (parsie.tokenArr[1].lexeme == ">")
                     {
                         genError(parsie.tokenArr[0].lineNum, parsie.tokenArr[0].lexeme + parsie.tokenArr[1].lexeme, "<<");
                     }
@@ -1755,7 +1766,7 @@ namespace Compiler
 
                 if (parsie.tokenArr[0].lexeme == ";")
                 {
-                    if (secondPass) 
+                    if (secondPass)
                     {
                         semanticAnalyzer.comment = parsie.commentLine;
                         parsie.commentLine = "";
@@ -1774,7 +1785,7 @@ namespace Compiler
                 parsie.Update();
                 if (parsie.tokenArr[0].thisType == TokenType.PARENTHESES_OPEN)
                 {
-                    if (secondPass) 
+                    if (secondPass)
                     {
                         semanticAnalyzer.OPush(parsie.tokenArr[0]);
                     }
@@ -1794,8 +1805,8 @@ namespace Compiler
                     {
                         genError(parsie.tokenArr[0].lineNum, parsie.tokenArr[0].lexeme, ")");
                     }
-                    caseBlock(); 
-                    
+                    caseBlock();
+
                 }
                 else
                 {
@@ -1823,12 +1834,12 @@ namespace Compiler
         /*
             Handle case blocks
          */
-        private void caseBlock() 
+        private void caseBlock()
         {
             if (parsie.tokenArr[0].thisType == TokenType.BLOCK_BEGIN)
             {
                 parsie.Update();
-                while (parsie.tokenArr[0].lexeme != "default") 
+                while (parsie.tokenArr[0].lexeme != "default")
                 {
                     CaseLabel();
                 }
@@ -1837,7 +1848,7 @@ namespace Compiler
                 {
                     parsie.Update();
                 }
-                else 
+                else
                 {
                     genError(parsie.tokenArr[0].lineNum, parsie.tokenArr[0].lexeme, ":");
                 }
@@ -1846,12 +1857,12 @@ namespace Compiler
                 {
                     parsie.Update();
                 }
-                else 
+                else
                 {
                     genError(parsie.tokenArr[0].lineNum, parsie.tokenArr[0].lexeme, "}");
                 }
             }
-            else 
+            else
             {
                 genError(parsie.tokenArr[0].lineNum, parsie.tokenArr[0].lexeme, "{");
             }
@@ -1859,7 +1870,7 @@ namespace Compiler
         /*
             Handle Case labels
          */
-        private void CaseLabel() 
+        private void CaseLabel()
         {
             if (parsie.tokenArr[0].lexeme == "case")
             {
@@ -1867,7 +1878,7 @@ namespace Compiler
                 Literal();
                 if (parsie.tokenArr[0].lexeme == ":")
                 {
-                    if (secondPass) 
+                    if (secondPass)
                     {
                         semanticAnalyzer.comment = parsie.commentLine;
                         semanticAnalyzer.EoE();
@@ -1880,7 +1891,7 @@ namespace Compiler
                 }
                 Statement();
             }
-            else if (parsie.tokenArr[0].thisType == TokenType.BLOCK_END) 
+            else if (parsie.tokenArr[0].thisType == TokenType.BLOCK_END)
             {
                 genError(parsie.tokenArr[0].lineNum, parsie.tokenArr[0].lexeme, "default");
             }
@@ -1897,7 +1908,7 @@ namespace Compiler
             if (parsie.tokenArr[0].lexeme == "+" || parsie.tokenArr[0].lexeme == "-")
             {
                 bool negativeFlag = false;
-                if (parsie.tokenArr[0].lexeme == "-") 
+                if (parsie.tokenArr[0].lexeme == "-")
                 {
                     negativeFlag = true;
                 }
@@ -1910,13 +1921,13 @@ namespace Compiler
                         if (negativeFlag)
                         {
 
-                            if (s.Value.lexeme == "-"+parsie.tokenArr[0].lexeme)
+                            if (s.Value.lexeme == "-" + parsie.tokenArr[0].lexeme)
                             {
                                 existingLiteral = true;
                                 break;
                             }
                         }
-                        else 
+                        else
                         {
                             if (s.Value.lexeme == parsie.tokenArr[0].lexeme)
                             {
@@ -1930,7 +1941,7 @@ namespace Compiler
                     {
                         if (negativeFlag)
                         {
-                            addSymbol = new Symbol("g", "N" + symbolCounter, "-"+parsie.tokenArr[0].lexeme, "ilit");
+                            addSymbol = new Symbol("g", "N" + symbolCounter, "-" + parsie.tokenArr[0].lexeme, "ilit");
                         }
                         else
                         {
@@ -1950,10 +1961,10 @@ namespace Compiler
                         {
                             if (negativeFlag)
                             {
-                                parsie.tokenArr[0].lexeme.Insert(0,"-");
+                                parsie.tokenArr[0].lexeme.Insert(0, "-");
                                 semanticAnalyzer.LPush(parsie.tokenArr[0], scopeLevel);
                             }
-                            else 
+                            else
                             {
                                 semanticAnalyzer.LPush(parsie.tokenArr[0], scopeLevel);
                             }
@@ -1973,7 +1984,7 @@ namespace Compiler
                     }
                     parsie.Update();
                 }
-                else 
+                else
                 {
                     genError(parsie.tokenArr[0].lineNum, parsie.tokenArr[0].lexeme, "number");
                 }
@@ -2005,14 +2016,14 @@ namespace Compiler
                         symbolCounter++;
                     }
                 }
-                if (secondPass) 
+                if (secondPass)
                 {
                     // MAYBE PUSH HERE
                     semanticAnalyzer.LPush(parsie.tokenArr[0], scopeLevel);
                 }
                 parsie.Update();
             }
-            else if (parsie.tokenArr[0].thisType == TokenType.CHARACTER) 
+            else if (parsie.tokenArr[0].thisType == TokenType.CHARACTER)
             {
                 bool existingLiteral = false;
                 foreach (KeyValuePair<string, Symbol> s in symbolHashSet)
@@ -2044,11 +2055,11 @@ namespace Compiler
                 }
                 parsie.Update();
             }
-            else 
+            else
             {
                 genError(parsie.tokenArr[0].lineNum, parsie.tokenArr[0].lexeme, "literal");
             }
-            
+
         }
         /*
             checks if the lexeme qualifies as an expressionz
@@ -2092,24 +2103,24 @@ namespace Compiler
             if (lexemeIn.thisType == TokenType.KEYWORDS)
             {
                 if (lexemeIn.lexeme == "int" || lexemeIn.lexeme == "char" || lexemeIn.lexeme == "bool" || lexemeIn.lexeme == "void" || lexemeIn.lexeme == "sym")
-                {                    
+                {
                     return true;
                 }
-            } 
+            }
             else if (lexemeIn.thisType == TokenType.IDENTIFIER)
             {
-                foreach (string s in classes) 
+                foreach (string s in classes)
                 {
-                    if (s.Equals(lexemeIn.lexeme)) 
+                    if (s.Equals(lexemeIn.lexeme))
                     {
                         return true;
                     }
                 }
                 return false;
             }
-            else 
+            else
             {
-            
+
             }
 
             return false;
@@ -2119,7 +2130,7 @@ namespace Compiler
          */
         public void genSAMClassesDup(int curLine, string found)
         {
-            Console.WriteLine(curLine + ": Duplicate class " + found );
+            Console.WriteLine(curLine + ": Duplicate class " + found);
             System.Environment.Exit(-1);
         }
         public void genSAMConst(int curLine, string found, string expectation)
@@ -2139,13 +2150,13 @@ namespace Compiler
             System.Environment.Exit(-1);
         }
 
-        public void genSAMErrorDupConst(int curLine, string found) 
+        public void genSAMErrorDupConst(int curLine, string found)
         {
             Console.WriteLine(curLine + ": Duplicate Constructor " + found);
             System.Environment.Exit(-1);
         }
 
-        public void genErrorSAMType(int curLine, string found) 
+        public void genErrorSAMType(int curLine, string found)
         {
             Console.WriteLine(curLine + ": Type " + found + " not defined");
             System.Environment.Exit(-1);
@@ -2191,9 +2202,9 @@ namespace Compiler
                 if (secondPass)
                 {
                     // Verify identifier isnt a type
-                    if (classes.Contains(parsie.tokenArr[0].lexeme)) 
+                    if (classes.Contains(parsie.tokenArr[0].lexeme))
                     {
-                        genError(parsie.tokenArr[0].lineNum,parsie.tokenArr[0].lexeme,"identifier");
+                        genError(parsie.tokenArr[0].lineNum, parsie.tokenArr[0].lexeme, "identifier");
                     }
                     if (parsie.tokenArr[1].lexeme != "(")
                     {
@@ -2236,7 +2247,7 @@ namespace Compiler
                                 {
                                     semanticAnalyzer.EAL(parsie.tokenArr[0].lineNum);
                                 }
-                                else 
+                                else
                                 {
                                     semanticAnalyzer.methodCall = false;
                                     semanticAnalyzer.EALSARpush();
@@ -2280,7 +2291,7 @@ namespace Compiler
                                 semanticAnalyzer.firstRowComment = true;
                             }
                             semanticAnalyzer.endArr(scopeString());
-                            if (semanticAnalyzer.tempVarOffset < curMethodOffset) 
+                            if (semanticAnalyzer.tempVarOffset < curMethodOffset)
                             {
                                 curMethodOffset = semanticAnalyzer.tempVarOffset;
                             }
@@ -2392,7 +2403,7 @@ namespace Compiler
                     Expressionz();
                 }
             }
-            else if (parsie.tokenArr[0].lexeme == "-" || parsie.tokenArr[0].lexeme == "+") 
+            else if (parsie.tokenArr[0].lexeme == "-" || parsie.tokenArr[0].lexeme == "+")
             {
                 Literal();
                 if (IsExpressionz(parsie.tokenArr[0]))
@@ -2411,7 +2422,7 @@ namespace Compiler
             // Handle assignments
             if (parsie.tokenArr[0].thisType == TokenType.ASSIGNMENT_OPERATOR)
             {
-                if (secondPass) 
+                if (secondPass)
                 {
                     semanticAnalyzer.OPush(parsie.tokenArr[0]);
                 }
@@ -2480,7 +2491,7 @@ namespace Compiler
                 }
             }
             // Handle Errors'
-            else 
+            else
             {
                 genError(parsie.tokenArr[0].lineNum, parsie.tokenArr[0].lexeme, "Expressionz");
             }
@@ -2488,7 +2499,7 @@ namespace Compiler
         /*
             Recursive waterfall for assignment expressions
          */
-        private void AssignmentExpression() 
+        private void AssignmentExpression()
         {
             if (IsExpression(parsie.tokenArr[0]))
             {
@@ -2506,8 +2517,8 @@ namespace Compiler
                         string newType = parsie.tokenArr[0].lexeme;
                         parsie.Update();
                         NewDecaration(newType);
-                    } 
-                    else if (!secondPass) 
+                    }
+                    else if (!secondPass)
                     {
                         string newType = parsie.tokenArr[0].lexeme;
                         parsie.Update();
@@ -2523,7 +2534,7 @@ namespace Compiler
                     genError(parsie.tokenArr[0].lineNum, parsie.tokenArr[0].lexeme, "new");
                 }
             }
-            else 
+            else
             {
                 genError(parsie.tokenArr[0].lineNum, parsie.tokenArr[0].lexeme, "expression, new");
             }
@@ -2545,13 +2556,13 @@ namespace Compiler
                 }
                 if (parsie.tokenArr[0].lexeme == ",")
                 {
-                    if (secondPass) 
+                    if (secondPass)
                     {
                         semanticAnalyzer.CommaAction();
                     }
                     parsie.Update();
                 }
-                else 
+                else
                 {
                     break;
                 }
@@ -2564,15 +2575,15 @@ namespace Compiler
         {
             if (parsie.tokenArr[0].thisType == TokenType.PARENTHESES_OPEN)
             {
-                DataRow commentLine = null; 
+                DataRow commentLine = null;
                 if (secondPass)
                 {
-                    addSymbol = new Symbol(scopeString(), "T" + semanticAnalyzer.tempVarCounter,newType,"lvar");
-                    
-                       
+                    addSymbol = new Symbol(scopeString(), "T" + semanticAnalyzer.tempVarCounter, newType, "lvar");
+
+
                     byteSize = 4;
                     semanticAnalyzer.tempVarCounter++;
-                    addSymbol.byteSize = byteSize;                 
+                    addSymbol.byteSize = byteSize;
                     addSymbol.data[0].Add("type: ");
                     addSymbol.data[0].Add(newType);
                     addSymbol.data[1].Add("accessMod: ");
@@ -2584,13 +2595,13 @@ namespace Compiler
                         curMethodOffset -= 4;
                         semanticAnalyzer.tempVarOffset = curMethodOffset;
                     }
-                    else 
+                    else
                     {
                         addSymbol.curOffset = curClassOffset;
                         curClassOffset += 4;
                         semanticAnalyzer.tempVarOffset = curMethodOffset;
                     }
-                    quad.AddRow("","NEWI", addSymbol.symid, "" +getClassSize(newType),"",parsie.commentLine); // We need to malloc here with a temp to store this temp will be the address of the object in heap
+                    quad.AddRow("", "NEWI", addSymbol.symid, "" + getClassSize(newType), "", parsie.commentLine); // We need to malloc here with a temp to store this temp will be the address of the object in heap
                     commentLine = quad.GetBotRow();
                     newType = FindConstbyLexeme(newType);
                     quad.AddRow("", "FRAME", newType, addSymbol.symid, "", "");
@@ -2606,7 +2617,7 @@ namespace Compiler
 
                 if (parsie.tokenArr[0].thisType == TokenType.PARENTHESES_CLOSE)
                 {
-                    if (secondPass) 
+                    if (secondPass)
                     {
                         semanticAnalyzer.EAL(parsie.tokenArr[0].lineNum);
                     }
@@ -2624,7 +2635,7 @@ namespace Compiler
             }
             else if (parsie.tokenArr[0].thisType == TokenType.ARRAY_BEGIN)
             {
-                if (secondPass) 
+                if (secondPass)
                 {
                     semanticAnalyzer.OPush(parsie.tokenArr[0]);
                 }
@@ -2647,7 +2658,7 @@ namespace Compiler
                 }
 
             }
-            else 
+            else
             {
                 genError(parsie.tokenArr[0].lineNum, parsie.tokenArr[0].lexeme, "(, [");
             }
@@ -2672,7 +2683,7 @@ namespace Compiler
                     {
                         semanticAnalyzer.checkie = 1;
                     }
-                    else 
+                    else
                     {
                         semanticAnalyzer.checkie = 0;
                     }
@@ -2684,18 +2695,18 @@ namespace Compiler
                         callID = (string)quad.GetBotRow()[2];
                         row = quad.RemoveBotRow();
                         string label = row[0].ToString();
-                        if (quad.GetBotRowArr()[1] == "JMP") 
+                        if (quad.GetBotRowArr()[1] == "JMP")
                         {
                             quad.labelNext = true;
                             quad.labelStack.Push(label);
                             row[0] = "";
                         }
                     }
-                    else if (semanticAnalyzer.checkie == 1) 
+                    else if (semanticAnalyzer.checkie == 1)
                     {
-                        
-                        quad.AddRow("","FRAME",semanticAnalyzer.stack.Peek().symbol.symid,"this","","");
-                        if (thisMemberFlag) 
+
+                        quad.AddRow("", "FRAME", semanticAnalyzer.stack.Peek().symbol.symid, "this", "", "");
+                        if (thisMemberFlag)
                         {
                             SARbase plate = semanticAnalyzer.stack.Pop();
                             SARinstance thisPlate = new SARinstance("this", new Symbol(scopeString(), "this", "this", "this"));
@@ -2703,7 +2714,7 @@ namespace Compiler
                             semanticAnalyzer.stack.Push(plate);
                         }
                     }
-                    
+
                 }
                 parsie.Update();
                 if (parsie.tokenArr[0].thisType == TokenType.PARENTHESES_OPEN)
@@ -2730,7 +2741,7 @@ namespace Compiler
                     }
                     else
                     {
-                        if (secondPass) 
+                        if (secondPass)
                         {
                             semanticAnalyzer.inArgList = true;
                         }
@@ -2742,7 +2753,7 @@ namespace Compiler
                         if (parsie.tokenArr[0].thisType == TokenType.PARENTHESES_CLOSE)
                         {
                             if (secondPass)
-                            {                                
+                            {
                                 semanticAnalyzer.rowStored = row;
                                 semanticAnalyzer.comment = parsie.commentLine + ")";
                                 semanticAnalyzer.incomingMemberRef = true;
@@ -2768,8 +2779,8 @@ namespace Compiler
                 else if (IsExpressionz(parsie.tokenArr[0]))
                 {
                     Expressionz();
-                } 
-                else if(parsie.tokenArr[0].thisType.Equals(TokenType.ARRAY_BEGIN))
+                }
+                else if (parsie.tokenArr[0].thisType.Equals(TokenType.ARRAY_BEGIN))
                 {
                     if (secondPass)
                     {
@@ -2800,25 +2811,25 @@ namespace Compiler
                     parsie.Update();
                     MemberReference();
                 }
-                if (IsExpressionz(parsie.tokenArr[0])) 
+                if (IsExpressionz(parsie.tokenArr[0]))
                 {
                     Expressionz();
                 }
 
             }
-            else 
+            else
             {
                 genError(parsie.tokenArr[0].lineNum, parsie.tokenArr[0].lexeme, "identifer");
             }
         }
 
-        public string FindMethodSymId(string scope, string lexeme) 
+        public string FindMethodSymId(string scope, string lexeme)
         {
             string retStr = "";
 
-            foreach (KeyValuePair<String, Symbol> s in symbolHashSet) 
+            foreach (KeyValuePair<String, Symbol> s in symbolHashSet)
             {
-                if (s.Value.scope == scope && s.Value.lexeme == lexeme) 
+                if (s.Value.scope == scope && s.Value.lexeme == lexeme)
                 {
                     return s.Value.symid;
                 }
@@ -2885,15 +2896,15 @@ namespace Compiler
             {
                 if (tokenArr[0] != null)
                 {
-                    if (commentLine.Length == 0) 
+                    if (commentLine.Length == 0)
                     {
                         commentLine += tokenArr[0].lineNum + ") ";
                     }
                     if (tokenArr[0].thisType == TokenType.KEYWORDS)
                     {
                         commentLine += " " + tokenArr[0].lexeme + " ";
-                    } 
-                    else if (tokenArr[0].thisType == TokenType.IDENTIFIER) 
+                    }
+                    else if (tokenArr[0].thisType == TokenType.IDENTIFIER)
                     {
                         commentLine += " " + tokenArr[0].lexeme + " ";
                     }
@@ -2935,7 +2946,7 @@ namespace Compiler
                         spaceCase[2] = tokenSplit[3];
                         tokenSplit = spaceCase;
                     }
-                    else 
+                    else
                     {
                         throw new Exception("Invalid Token Format in ET1");
                     }

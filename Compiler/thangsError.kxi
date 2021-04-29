@@ -1,0 +1,17 @@
+﻿class Foo {
+
+       public int func(int a, Foo foo, char b) 
+       {
+       
+             Foo f = this;
+             func(10, this, 'm');
+             this = f;
+
+       }
+}
+
+void kxi2021 main()
+{
+    int[] arr5;
+    arr5[1]= arr5[0];
+}

@@ -1,5 +1,4 @@
-﻿class DemoC 
-{
+﻿class DemoC{
 	private int i;
 	private int j;
 	public bool noWay;
@@ -17,10 +16,7 @@
 		return gcd(b, mod(a, b));
 	}
 	
-	public int inc(int i) { 
-	
-	return i + 1; 
-	}
+	public int inc(int i) { return i + 1; }
 	
 
     public int fib(int k) { // access mod?
@@ -31,7 +27,7 @@
 	
 	public int fact(int n)
     {
-        int result;		
+        int result;
 
        if(n==1)
          return 1;
@@ -39,11 +35,10 @@
        result = fact(n-1) * n;
        return result;
     }
-
 }
+
 void kxi2021 main() {
 	DemoC dc = null;
-
 	int k;
 	int j;
 	int fa;
@@ -85,12 +80,12 @@ void kxi2021 main() {
 	
 
 	    cout << '>';
-	    cin >> k;
+		cin >> k;
 	    cout << '\n';
 
 	}
 
 	cout <<  dc.inc(dc.inc(dc.fact(9)));
-	cout << '\n';
+	cout <<  '\n' ;
     }
 

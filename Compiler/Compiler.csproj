@@ -42,6 +42,9 @@
     <None Update="semanticStart.kxi">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="smallTree.kxi">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="tCodeStart.kxi">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -70,6 +73,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="testMeCSharp.kxi">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="thang.kxi">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="thangsError.kxi">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="ThangTest.kxi">

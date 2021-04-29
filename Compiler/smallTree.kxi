@@ -1,0 +1,85 @@
+﻿class bTree
+{
+	public Node val;	
+	public bTree left;	
+	public bTree right;
+
+	bTree(int x)
+	{	
+		val = new Node(x);	
+	}
+
+	public void printTree()
+	{
+		cout << val.x;
+		cout << '\n';
+		if(left != null)
+		{
+			cout << 'L';	
+			left.printTree();
+		}
+		if(right != null)
+		{
+			cout << 'R';
+			right.printTree();
+		}
+		cout << 'E';
+		cout << '\n';
+	}
+
+	public void setRight(bTree nright)
+	{	
+		right = nright;
+	}
+
+	public void setLeft(bTree nleft)
+	{
+		left = nleft;
+	}
+
+	public int retZed()
+	{
+		return 0;		
+	}
+
+}
+
+class Node
+{
+	public int x; 
+
+	Node(int xIn)
+	{	
+		x = xIn;
+	}
+}
+
+void kxi2021 main() 
+{
+	int x = -1;
+	bTree b1 = new bTree(1);
+	bTree b2 = new bTree(2);	
+	bTree b3 = new bTree(3);
+	bTree b4 = new bTree(4);
+	bTree b5 = new bTree(5);
+
+	cout << b1.val.x;	
+	cout << '\n';
+	cout << b2.val.x;
+	cout << '\n';
+	cout << b1.val.x;
+	cout << '\n';
+	cout << b2.val.x;
+	cout << '\n';
+	cout << 'E';
+	cout << '\n';
+	b1.setLeft(b2);
+	b1.setRight(b3);
+
+	b2.setLeft(b4);
+	b3.setRight(b5);
+	cout << 'M';
+	b1.printTree();
+	cout << '\n';
+	cout << 'X';
+}

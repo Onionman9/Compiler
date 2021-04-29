@@ -1,0 +1,30 @@
+﻿class Foo
+{
+	Foo(){}
+}
+
+void kxi2021 main()
+{
+	char inChar;
+	char dumpCIN;
+	cout << '>';
+	cin >> inChar;
+	cin >> dumpCIN;
+	cout << '\n';
+
+	while(inChar != '@')
+	{
+		cout << 'G';
+		cout << 'o';
+		cout << 't';
+		cout << ':';
+		cout << inChar;
+		cout << '\n';
+
+		cout << '>';
+		cin >> inChar;
+		cin >> dumpCIN;
+		cout << '\n';
+	}
+	return;
+}

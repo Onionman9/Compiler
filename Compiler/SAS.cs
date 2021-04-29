@@ -47,16 +47,16 @@ namespace Compiler
             quad = quadPointer;
             classes = _classes;
         }
-        public void RExist(SymbolTable s, string lexeme) 
+        public void RExist(SymbolTable s, string lexeme)
         {
 
         }
         /*
             Check if the instance variable exists inside the scope of the probalm, if multiple exist throw an error
          */
-        public void IPush(Token inToken, List<string> scope) 
+        public void IPush(Token inToken, List<string> scope)
         {
-            if (null == stack) 
+            if (null == stack)
             {
                 stack = new Stack<SARbase>();
             }
@@ -76,12 +76,12 @@ namespace Compiler
             SARinstance delayedPush = null;
             bool refAdd = false;
             bool foundRef = false;
-            if (parentId == "this") 
+            if (parentId == "this")
             {
                 // decompose scope on this and check if member exists
                 string[] decomped = stack.Peek().symbol.scope.Split(".");
                 List<string> scopeClimb = new List<string>();
-                foreach (string s in decomped) 
+                foreach (string s in decomped)
                 {
                     scopeClimb.Add(s);
                 }
@@ -90,17 +90,17 @@ namespace Compiler
                 while (scopeClimb.Count > 1 && !foundNearest)
                 {
                     scopeCheck = "";
-                    for (int i = 0; i < scopeClimb.Count; i++) 
+                    for (int i = 0; i < scopeClimb.Count; i++)
                     {
                         scopeCheck += scopeClimb[i];
-                        if (i < scopeClimb.Count - 1) 
+                        if (i < scopeClimb.Count - 1)
                         {
                             scopeCheck += ".";
                         }
                     }
                     foreach (KeyValuePair<string, Symbol> verifySym in symbolHashSet)
                     {
-                        if (foundNearest) 
+                        if (foundNearest)
                         {
                             break;
                         }
@@ -147,7 +147,7 @@ namespace Compiler
                 // If we don't find the symbol throw an error
                 if (!foundNearest)
                 {
-                    genError(inToken.lineNum,"this." + inToken.lexeme + " does not exist", "Declaration for " + inToken.lexeme);
+                    genError(inToken.lineNum, "this." + inToken.lexeme + " does not exist", "Declaration for " + inToken.lexeme);
                 }
 
                 incomingMemberRef = false;
@@ -156,7 +156,7 @@ namespace Compiler
             foreach (KeyValuePair<string, Symbol> symbol in symbolHashSet)
             {
                 // Bug Fixing
-                if (foundRef) 
+                if (foundRef)
                 {
                     foundRef = false;
                     break;
@@ -170,7 +170,7 @@ namespace Compiler
                         // Get type and find the class that matches, verify class contains the member
                         SARref topper = (SARref)stack.Peek();
                         if (symbol.Value.data[0].Count > 2)
-                        { 
+                        {
                             string type = symbol.Value.data[0][1];
                         }
                         scopeCheck = "g." + topper.symbol.data[0][1];
@@ -186,7 +186,7 @@ namespace Compiler
                                 if (verifySym.Value.symid[0] == 'M')
                                 {
                                     SARinstance memRef = new SARinstance(verifySym.Value.symid, verifySym.Value);
-                                    if (delayedPush != null && delayedPush.xId == memRef.xId) 
+                                    if (delayedPush != null && delayedPush.xId == memRef.xId)
                                     {
                                         instanceCount--;
                                         break;
@@ -217,7 +217,7 @@ namespace Compiler
                                                 addie.data[i].Add(s);
                                             }
                                         }
-                                        quad.AddRow("","REF", left.symbol.symid, verifySym.Value.symid ,addie.symid,comment);
+                                        quad.AddRow("", "REF", left.symbol.symid, verifySym.Value.symid, addie.symid, comment);
                                         if (firstRowComment)
                                         {
                                             commentRow = quad.GetBotRow();
@@ -229,7 +229,7 @@ namespace Compiler
                                     }
                                     // It exists create SAR and push it onto the stack
                                     stack.Push(new SARref(left.xId + "." + inToken.lexeme, left, new SARinstance(inToken.lexeme, verifySym.Value)));
-                                    
+
                                     // add the sarRef to the symbolTable
                                 }
                                 break;
@@ -239,7 +239,7 @@ namespace Compiler
                         if (instanceCount == 0)
                         {
                             string classLex = "" + scopeCheck;
-                            classLex = classLex.Remove(0,2);
+                            classLex = classLex.Remove(0, 2);
                             if (checkie == 0)
                             {
                                 genSAMErrorMemRef(inToken.lineNum, "Variable", inToken.lexeme, classLex);
@@ -248,7 +248,7 @@ namespace Compiler
                             {
                                 genSAMErrorMemRef(inToken.lineNum, "Function", inToken.lexeme, classLex);
                             }
-                            else 
+                            else
                             {
                                 genSAMErrorMemRef(inToken.lineNum, "Array", inToken.lexeme, classLex);
                             }
@@ -279,7 +279,7 @@ namespace Compiler
                                         instanceCount--;
                                         stack.Pop();
                                     }
-                                    else 
+                                    else
                                     {
                                         // push the method up frame onto the    
                                         quad.AddRow("", "FRAME", verifySym.Key, quadDat.symbol.symid, "", "");
@@ -306,7 +306,7 @@ namespace Compiler
                                     {
                                         tempVarOffset -= 4;
                                     }
-                                    else 
+                                    else
                                     {
                                         tempVarOffset += 4;
                                     }
@@ -354,7 +354,7 @@ namespace Compiler
 
                         }                        // verify class contains current symbol (Cat.kittens should have kittens in the class for this to make a SARmemRef)
                     }
-                    
+
                 }
                 // Check if iExists
                 else if (symbol.Value.lexeme.Equals(inToken.lexeme))
@@ -370,7 +370,7 @@ namespace Compiler
                     int index = 0;
                     // Verify valid scope
                     foreach (string symScope in symbol.Value.scope.Split("."))
-                    {                        
+                    {
                         if (index < scope.Count && symScope.Equals(scope[index]))
                         {
                             index++;
@@ -413,14 +413,14 @@ namespace Compiler
                 }
             }
             // If we don't find the symbol throw an error
-            if (leavingSARref) 
+            if (leavingSARref)
             {
                 stack.Push(delayedPush);
             }
             if (instanceCount == 0 && inToken.lexeme != "cout" && !refFuncError && notMethod)
             {
                 genSAMErrorIEXIST(inToken.lineNum, "variable", inToken.lexeme);
-            } 
+            }
             else if (instanceCount == 0 && inToken.lexeme != "cout" && !refFuncError && !notMethod)
             {
                 memFuncError = true;
@@ -447,8 +447,8 @@ namespace Compiler
                 }
                 symbolHashSet.Add(addie.symid, addie);
                 stack.Peek().symbol = addie;
-            } 
-            else if (incomingMemberRef && refAdd) 
+            }
+            else if (incomingMemberRef && refAdd)
             {
                 symbolHashSet.Add(addie.symid, addie);
             }
@@ -456,7 +456,7 @@ namespace Compiler
             // Frame it here 
             if (stack.Peek().symbol.symid[0] == 'M')
             {
-                if(quad.GetBotRow()[1].ToString() != "FRAME")
+                if (quad.GetBotRow()[1].ToString() != "FRAME")
                 {
                     quad.AddRow("", "FRAME", stack.Peek().symbol.symid, "this", "", "");
                     if (firstRowComment)
@@ -478,16 +478,16 @@ namespace Compiler
             if (inToken.lexeme == "this")
             {
                 string scopeComb = "";
-                for (int i = 0; i <scope.Count; i++) 
+                for (int i = 0; i < scope.Count; i++)
                 {
                     scopeComb += scope[i];
-                    if (i < scope.Count - 1) 
+                    if (i < scope.Count - 1)
                     {
                         scopeComb += ".";
                     }
-                }                
-                
-                Symbol instance = new Symbol(scopeComb,"this","this","this");
+                }
+
+                Symbol instance = new Symbol(scopeComb, "this", "this", "this");
                 instance.data[0].Add("type: ");
                 instance.data[0].Add(scope[1]);
                 stack.Push(new SARliteral(inToken.lexeme, instance));
@@ -571,7 +571,7 @@ namespace Compiler
 
                     // Push onto Sar, if duplicate variables of same scope found throw error
                     string dupCheck = "";
-                    for (int i = 0; i < scope.Count; i++)  
+                    for (int i = 0; i < scope.Count; i++)
                     {
                         dupCheck += scope[i];
                         dupCheck += '.';
@@ -584,7 +584,7 @@ namespace Compiler
                         {
                             instanceCount++;
                             stack.Push(new SARinstance(inToken.lexeme, symbol.Value));
-                            if (dupCheck.Contains(dupCheck)) 
+                            if (dupCheck.Contains(dupCheck))
                             {
                                 dupChecker.Add(dupCheck, 1);
                                 break;
@@ -597,12 +597,12 @@ namespace Compiler
                             {
                                 genSAMErrorDUP(inToken.lineNum, "function", inToken.lexeme);
                             }
-                            else 
+                            else
                             {
                                 if (dupChecker.ContainsKey(dupCheck) && dupChecker[dupCheck] > 0)
                                 {
                                     genSAMErrorDUP(inToken.lineNum, "variable", inToken.lexeme);
-                                }   
+                                }
                             }
                         }
                     }
@@ -615,12 +615,12 @@ namespace Compiler
                 genSAMErrorIEXIST(inToken.lineNum, "Variable", inToken.lexeme);
             }
 
-            if (intializeArr) 
+            if (intializeArr)
             {
                 intializeArr = false;
                 SARinstance right = (SARinstance)stack.Pop();
                 SAR_Type left = (SAR_Type)stack.Pop();
-                if (left.xId != right.symbol.data[0][2]) 
+                if (left.xId != right.symbol.data[0][2])
                 {
                     genError(inToken.lineNum, right.symbol.data[0][2], left.xId);
                 }
@@ -638,7 +638,7 @@ namespace Compiler
                 oStack = new Stack<SARbase>();
             }
             // verify valid operators
-            if (inToken.lexeme == "and" || inToken.lexeme == "or" || inToken.lexeme == "==" || inToken.lexeme == "!=" || inToken.lexeme == "<=" || inToken.lexeme == ">=" || inToken.lexeme == "<" 
+            if (inToken.lexeme == "and" || inToken.lexeme == "or" || inToken.lexeme == "==" || inToken.lexeme == "!=" || inToken.lexeme == "<=" || inToken.lexeme == ">=" || inToken.lexeme == "<"
                 || inToken.lexeme == ">" || inToken.lexeme == "+" || inToken.lexeme == "-" || inToken.lexeme == "*" || inToken.lexeme == "/" || inToken.lexeme == "=" || inToken.lexeme == "(" || inToken.lexeme == "[")
             {
                 if (inToken.lexeme != "=" && inToken.thisType.Equals(TokenType.MATH_OPERATORS) && (oStack.Peek().token.lexeme.Equals("*") || oStack.Peek().token.lexeme.Equals("/")))
@@ -652,7 +652,7 @@ namespace Compiler
 
                     SARtemp tempie = new SARtemp("T" + tempVarCounter, leftSide, op, rightSide);
                     // We add a new temp variable here the activation record needs SPACE for this
-                    Symbol addSym =(Symbol)tempie.symbol.Clone();
+                    Symbol addSym = (Symbol)tempie.symbol.Clone();
                     addSym.symid = tempie.xId;
                     addSym.lexeme = tempie.storedData[0].xId + tempie.storedData[1].token.lexeme + tempie.storedData[2].xId;
                     addSym.curOffset = tempVarOffset;
@@ -723,7 +723,7 @@ namespace Compiler
                             stack.Push(tempie);
                             // verify comment
                             string type = "";
-                            switch (op.token.lexeme) 
+                            switch (op.token.lexeme)
                             {
                                 case "*":
                                     type = "MUL";
@@ -747,8 +747,8 @@ namespace Compiler
                             comment = "";
                         }
                     }
-                } 
-                else if (inToken.thisType.Equals(TokenType.KEYWORDS)) 
+                }
+                else if (inToken.thisType.Equals(TokenType.KEYWORDS))
                 {
                     // Handle any post relational math
                     while (oStack.Peek().token.thisType.Equals(TokenType.MATH_OPERATORS))
@@ -779,7 +779,7 @@ namespace Compiler
 
                         stack.Push(tempie);
                     }
-                    if (oStack.Peek().token.thisType.Equals(TokenType.RELATIONAL_OPERATORS)) 
+                    if (oStack.Peek().token.thisType.Equals(TokenType.RELATIONAL_OPERATORS))
                     {
                         SARbase rightSide = stack.Pop();
                         SARbase leftSide = stack.Pop();
@@ -838,18 +838,18 @@ namespace Compiler
                     // handle all relational statements
                 }
                 // Verify previous value is valid for a math operator
-                if (inToken.thisType.Equals(TokenType.MATH_OPERATORS)) 
+                if (inToken.thisType.Equals(TokenType.MATH_OPERATORS))
                 {
-                    if (stack.Peek().symbol.data[0][1] != "int") 
+                    if (stack.Peek().symbol.data[0][1] != "int")
                     {
                         genError(inToken.lineNum, stack.Peek().symbol.data[0][1], "int");
                     }
-                } 
-                
+                }
+
                 oStack.Push(new SARoperator(inToken));
                 // TODO handle precedence here
             }
-            else 
+            else
             {
                 genError(inToken.lineNum, inToken.lexeme, "valid operator");
             }
@@ -857,7 +857,7 @@ namespace Compiler
         /*
             Push a type onto the Semantic Action Record
          */
-        public void TPush(string type) 
+        public void TPush(string type)
         {
             SAR_Type type1 = new SAR_Type(type);
             if (null == stack)
@@ -866,7 +866,7 @@ namespace Compiler
             }
             stack.Push(type1);
         }
-        public void EoE() 
+        public void EoE()
         {
             // End of expression perform shunting yard algorithm
             SARoperator sOp;
@@ -877,9 +877,9 @@ namespace Compiler
                 oStack = new Stack<SARbase>();
             }
             //TODO VERIFY CORRECTNESS
-            if (oStack.Count == 0) 
+            if (oStack.Count == 0)
             {
-                while (stack.Count != 0) 
+                while (stack.Count != 0)
                 {
                     stack.Pop();
                 }
@@ -891,7 +891,7 @@ namespace Compiler
             {
                 sOp = (SARoperator)oStack.Pop();
                 SARtemp tempie;
-                if (sOp.token.lexeme == "(" && stack.Count == 0) 
+                if (sOp.token.lexeme == "(" && stack.Count == 0)
                 {
                     commentRow[5] = comment;
                     comment = "";
@@ -899,7 +899,7 @@ namespace Compiler
                 }
                 rightSide = stack.Pop();
                 leftSide = stack.Pop();
-                if (leftSide is SAR_Func && stack.Count > 0 && sOp.token.lexeme == "=") 
+                if (leftSide is SAR_Func && stack.Count > 0 && sOp.token.lexeme == "=")
                 {
                     leftSide = stack.Pop();
                 }
@@ -962,7 +962,7 @@ namespace Compiler
                         {
                             genInvalidOp(sOp.token.lineNum, leftSide.symbol.data[0][1], leftSide.symbol.lexeme, sOp.token.lexeme, rightSide.symbol.lexeme, rightSide.symbol.lexeme);
                         }
-                        else if (rightSide.symbol.scope == "g.main" && rightSide.symbol.lexeme == "this") 
+                        else if (rightSide.symbol.scope == "g.main" && rightSide.symbol.lexeme == "this")
                         {
                             genSAMErrorIEXIST(sOp.token.lineNum, "Variable", "this");
                         }
@@ -1036,7 +1036,7 @@ namespace Compiler
                             quad.AddRow("", "MOV", leftSide.symbol.symid, rightSide.symbol.symid, "", comment);
                             comment = "";
                         }
-                        else 
+                        else
                         {
                             quad.AddRow("", "RETURN", rightSide.symbol.symid, "", "", comment);
                             comment = "";
@@ -1269,7 +1269,7 @@ namespace Compiler
                                 break;
                         }
 
-                        if (!firstRowComment) 
+                        if (!firstRowComment)
                         {
                             commentRow[5] = comment;
                             comment = "";
@@ -1280,15 +1280,15 @@ namespace Compiler
                         break;
                     case "and":
                     case "or":
-                        if (rightSide.symbol.data[0][1].Equals("null")) 
+                        if (rightSide.symbol.data[0][1].Equals("null"))
                         {
                             genSAMErrorANDOR(sOp.token.lineNum, sOp.token.lexeme, leftSide.symbol.data[0][1]);
                         }
                         else if (!leftSide.symbol.data[0][1].Equals("bool"))
                         {
                             genSAMErrorANDOR(sOp.token.lineNum, sOp.token.lexeme, leftSide.symbol.data[0][1]);
-                        } 
-                        else if (!rightSide.symbol.data[0][1].Equals("bool")) 
+                        }
+                        else if (!rightSide.symbol.data[0][1].Equals("bool"))
                         {
                             genSAMErrorANDOR(sOp.token.lineNum, sOp.token.lexeme, leftSide.symbol.data[0][1]);
                         }
@@ -1324,7 +1324,7 @@ namespace Compiler
                         break;
                 }
             }
-            if (quad.GetBotRow()[1] == "PEEK") 
+            if (quad.GetBotRow()[1] == "PEEK")
             {
                 quad.RemoveBotRow();
             }
@@ -1332,9 +1332,9 @@ namespace Compiler
         /*
             condense instances of args to single arg
          */
-        public void CommaAction() 
+        public void CommaAction()
         {
-            while (oStack.Peek().token.lexeme != "(") 
+            while (oStack.Peek().token.lexeme != "(")
             {
                 SYA();
             }
@@ -1342,7 +1342,7 @@ namespace Compiler
         /*
          * EAL for function call
          */
-        public void EAL(int lineNum) 
+        public void EAL(int lineNum)
         {
             SARbase rightSide = null;
             SARbase leftSide = null;
@@ -1355,7 +1355,7 @@ namespace Compiler
             {
                 SYA();
             }
-            if(rowStored != null) 
+            if (rowStored != null)
             {
                 rowStored[5] = comment;
                 comment = "";
@@ -1366,16 +1366,16 @@ namespace Compiler
              */
             SAR_AL argList = new SAR_AL("al_sar");
             Stack<string> revParamPush = new Stack<string>();
-            while (!(stack.Peek() is SAR_BAL)) 
+            while (!(stack.Peek() is SAR_BAL))
             {
                 SARbase tempSAR = stack.Pop();
                 revParamPush.Push(tempSAR.symbol.symid);
-                argList.args.Insert(0,tempSAR);
+                argList.args.Insert(0, tempSAR);
             }
 
-            if (refFuncError) 
+            if (refFuncError)
             {
-                stack.Pop();                
+                stack.Pop();
                 genSAMErrorMemRefFunc(lineNum, "Function", refErrorName, stack.Peek().symbol.data[0][1], argList);
             }
 
@@ -1413,20 +1413,20 @@ namespace Compiler
                     {
                         genSAMErrorIEXISTFunc(lineNum, leftSide.symbol.lexeme, argList.args, leftSide.symbol.scope.Remove(0, 2));
                     }
-                    catch (KeyNotFoundException e) 
+                    catch (KeyNotFoundException e)
                     {
                         genSAMErrorIEXISTFuncMemRef(oStack.Peek().token.lineNum, refErrorName, argList.args);
                     }
                     indexie = indexie + 2; // note that in the symbol for a method the paramaters start at index 1, and each even index is a comma 
                 }
-                if (func.funcArgs.args.Count != ((leftSide.symbol.data[1].Count - 1)/2)) 
+                if (func.funcArgs.args.Count != ((leftSide.symbol.data[1].Count - 1) / 2))
                 {
-                    genSAMErrorIEXISTFunc(lineNum, leftSide.symbol.lexeme, argList.args, leftSide.symbol.scope.Remove(0,2));
+                    genSAMErrorIEXISTFunc(lineNum, leftSide.symbol.lexeme, argList.args, leftSide.symbol.scope.Remove(0, 2));
                 }
                 rightSide = stack.Pop();
-                if (stack.Count == 0 && oStack.Peek().token.lexeme == "(") 
+                if (stack.Count == 0 && oStack.Peek().token.lexeme == "(")
                 {
-                    quad.AddRow("","CALL",rightSide.symbol.symid,"","","");
+                    quad.AddRow("", "CALL", rightSide.symbol.symid, "", "", "");
                     return;
                 }
                 leftSide = stack.Pop();
@@ -1455,7 +1455,7 @@ namespace Compiler
                     symbolHashSet.Add(addie.symid, addie);
                     tempVarCounter++;
                 }
-                if(rightSide is SARref) 
+                if (rightSide is SARref)
                 {
                     Symbol addie = new Symbol(rightSide.symbol.scope, "T" + tempVarCounter, rightSide.symbol.lexeme, rightSide.symbol.kind);
                     for (int i = 0; i < 3; i++)
@@ -1523,18 +1523,18 @@ namespace Compiler
                 }
                 oStack.Pop();
             }
-            else 
-            {                
-                rightArgs = (SAR_AL) stack.Pop();
+            else
+            {
+                rightArgs = (SAR_AL)stack.Pop();
                 leftType = (SAR_Type)stack.Pop();
 
                 // Find the constructor
                 Symbol constructor = null;
                 bool foundCons = false;
-                foreach (KeyValuePair<string, Symbol> s in symbolHashSet) 
-                {                   
+                foreach (KeyValuePair<string, Symbol> s in symbolHashSet)
+                {
 
-                    if (s.Value.lexeme.Equals(leftType.xId) && s.Value.symid[0].Equals('X'))  
+                    if (s.Value.lexeme.Equals(leftType.xId) && s.Value.symid[0].Equals('X'))
                     {
                         constructor = s.Value;
                         int argIndex = 0;
@@ -1545,7 +1545,7 @@ namespace Compiler
                             foundCons = true;
                             break;
                         }
-                        for (int i = 1; i < constructor.data[1].Count - 1; i = i + 2,argIndex++) 
+                        for (int i = 1; i < constructor.data[1].Count - 1; i = i + 2, argIndex++)
                         {
                             Symbol param = symbolHashSet[constructor.data[1][i]];
                             if (argIndex < rightArgs.args.Count)
@@ -1572,7 +1572,7 @@ namespace Compiler
                             }
                         }
 
-                        if (foundCons) 
+                        if (foundCons)
                         {
                             break;
                         }
@@ -1586,23 +1586,23 @@ namespace Compiler
                 {
                     // remove the paren in the oStack
                     oStack.Pop();
-                    SAR_NEW addie = new SAR_NEW("new_sar",leftType, rightArgs);
+                    SAR_NEW addie = new SAR_NEW("new_sar", leftType, rightArgs);
                     addie.symbol = (Symbol)constructor.Clone();
                     //
                     stack.Push(addie);
                 }
-                else 
+                else
                 {
                     if (leftSide == null)
                     {
                         genSAMErrorIEXISTFuncConst(lineNum, leftType.xId, rightArgs, leftType.xId);
                     }
-                    else 
+                    else
                     {
                         genSAMErrorIEXISTFuncConst(lineNum, leftType.xId, rightArgs, leftSide.symbol.scope.Remove(0, 2));
                     }
                 }
-                newFlag = false;            
+                newFlag = false;
             }
 
             if (leftSide is null)
@@ -1623,7 +1623,7 @@ namespace Compiler
                 leftSide = stack.Peek();
                 addSym = (Symbol)rightSide.symbol.Clone();
             }
-            else 
+            else
             {
                 addSym = (Symbol)rightSide.symbol.Clone();
             }
@@ -1652,7 +1652,7 @@ namespace Compiler
             {
                 tempVarOffset += 4;
             }
-            SARinstance tempie = new SARinstance(addSym.symid,addSym);
+            SARinstance tempie = new SARinstance(addSym.symid, addSym);
             stack.Push(tempie);
             tempVarCounter++;
             if (leftType != null)
@@ -1669,7 +1669,7 @@ namespace Compiler
         /*
             BAL SAR push (adds beginnign arg list ot stack)
          */
-        public void BALSARpush() 
+        public void BALSARpush()
         {
             stack.Push(new SAR_BAL("bal_sar"));
             // This servers as a marker for when our arg starts
@@ -2081,7 +2081,7 @@ namespace Compiler
                         break;
                     case "(":
                         rightSide = stack.Pop();
-                        if (stack.Count == 0) 
+                        if (stack.Count == 0)
                         {
                             unHitBal = false;
                             break;
@@ -2093,7 +2093,7 @@ namespace Compiler
                             args.Add(rightSide);
                             if (stack.Count == 0)
                             {
-                                if (ifNestedExpression == true) 
+                                if (ifNestedExpression == true)
                                 {
                                     stack.Push(rightSide);
                                 }
@@ -2106,23 +2106,23 @@ namespace Compiler
                                 {
                                     string func = leftSide.symbol.lexeme + "(";
 
-                                    for (int j = 0; j < args.Count; j++) 
+                                    for (int j = 0; j < args.Count; j++)
                                     {
                                         if (args[j].symbol.data[0][1] != "@:")
                                         {
                                             func += args[j].symbol.data[0][1];
                                         }
-                                        else 
+                                        else
                                         {
                                             func += args[j].symbol.data[0][2];
                                             func += "[]";
                                         }
-                                        if (j < args.Count - 1) 
+                                        if (j < args.Count - 1)
                                         {
                                             func += ",";
                                         }
                                     }
-                                    
+
                                     func += ")";
                                     genSAMErrorIEXIST(sOp.token.lineNum, "Function", func);
                                 }
@@ -2135,19 +2135,19 @@ namespace Compiler
                                         stack.Push(rightSide);
                                         foreach (SARbase basie in args)
                                         {
-                                            if(methodCall == true) 
+                                            if (methodCall == true)
                                             {
                                                 quad.AddRow("", "PUSH", basie.symbol.symid, "", "", "");
                                             }
-                                            if (firstRowComment) 
+                                            if (firstRowComment)
                                             {
                                                 firstRowComment = false;
                                                 commentRow = quad.GetBotRow();
                                             }
                                         }
                                         return;
-                                    } 
-                                    else if (leftSide is SARliteral || leftSide is SARtemp) 
+                                    }
+                                    else if (leftSide is SARliteral || leftSide is SARtemp)
                                     {
                                         stack.Push(leftSide);
                                         stack.Push(rightSide);
@@ -2164,7 +2164,7 @@ namespace Compiler
                             stack.Push(leftSide);
                             break;
                         }
-                        else if (rightSide is SAR_BAL) 
+                        else if (rightSide is SAR_BAL)
                         {
                             stack.Push(leftSide);
                             if ((leftSide.symbol.data[1].Count / 2) > 1)
@@ -2187,7 +2187,7 @@ namespace Compiler
                 }
             }
 
-            if (memFuncError) 
+            if (memFuncError)
             {
                 genSAMErrorIEXISTFuncMemRef(oStack.Peek().token.lineNum, refErrorName, args);
             }
@@ -2195,7 +2195,7 @@ namespace Compiler
         /*
            add a return push that has the containing methods return type 
          */
-        public void RetPush(string _scope) 
+        public void RetPush(string _scope)
         {
             /*
                 Find containing method (will have the scope above) 
@@ -2204,37 +2204,37 @@ namespace Compiler
             bool found = false;
             Symbol method = null;
 
-            foreach (KeyValuePair<string, Symbol> s in symbolHashSet) 
+            foreach (KeyValuePair<string, Symbol> s in symbolHashSet)
             {
                 string[] otherScope = s.Value.scope.Split(".");
 
-                for (int i = 0; i < scope.Length - 1; i++) 
+                for (int i = 0; i < scope.Length - 1; i++)
                 {
                     if (i < otherScope.Length)
                     {
                         found = true;
                     }
-                    else 
+                    else
                     {
                         found = false;
                         break;
                     }
                 }
 
-                if (found) 
+                if (found)
                 {
-                    
-                    if (scope[scope.Length - 1].Equals(s.Value.lexeme)) 
+
+                    if (scope[scope.Length - 1].Equals(s.Value.lexeme))
                     {
                         bool notDup = true;
-                        for (int i = 0; i < otherScope.Length; i++) 
+                        for (int i = 0; i < otherScope.Length; i++)
                         {
                             if (scope[i] != otherScope[i])
                             {
                                 notDup = false;
                             }
                         }
-                        if (notDup) 
+                        if (notDup)
                         {
                             method = s.Value;
                             break;
@@ -2251,10 +2251,10 @@ namespace Compiler
             SARinstance retInst = new SARinstance("return", method);
             retInst.symbol = (Symbol)method.Clone();
             stack.Push(retInst);
-            
+
         }
 
-        public void CloseSwitch() 
+        public void CloseSwitch()
         {
 
             while (oStack.Peek().token.lexeme != "(")
@@ -2269,7 +2269,7 @@ namespace Compiler
         /*
             # call to stack
          */
-        public void endArr(string scope) 
+        public void endArr(string scope)
         {
             SARoperator sOp;
             SARtemp tempie;
@@ -2282,7 +2282,7 @@ namespace Compiler
             // Handle initialization (int[] x = ...)
 
             // Verify result insde "[]" is an int
-            if (stack.Peek().symbol.data[0][1] != "int") 
+            if (stack.Peek().symbol.data[0][1] != "int")
             {
                 genSAMErrorArr(oStack.Peek().token.lineNum, stack.Peek().symbol.data[0][1]);
             }
@@ -2303,7 +2303,7 @@ namespace Compiler
 
                 stack.Push(arrComb);
                 // CREATING A NEW ARRAY
-                tempie = new SARtemp("T" + tempVarCounter, rightSide, new SARoperator(new Token("*",TokenType.MATH_OPERATORS, oStack.Peek().token.lineNum)), rightSide);
+                tempie = new SARtemp("T" + tempVarCounter, rightSide, new SARoperator(new Token("*", TokenType.MATH_OPERATORS, oStack.Peek().token.lineNum)), rightSide);
                 Symbol addie = (Symbol)tempie.symbol.Clone();
                 addie.symid = tempie.xId;
                 addie.lexeme = tempie.storedData[0].xId + tempie.storedData[1].token.lexeme + getNumLiteral(4).symid;
@@ -2350,7 +2350,7 @@ namespace Compiler
                 symbolHashSet.Add(malloc.symid, malloc);
                 tempVarCounter++;
                 quad.AddRow("", "NEW", malloc.symid, addie.symid, "", "");
-                
+
                 SARoperator verifyEq = (SARoperator)oStack.Pop();
                 if (verifyEq.token.lexeme != "=")
                 {
@@ -2368,7 +2368,7 @@ namespace Compiler
                 }
 
             }
-            else if (memberArr) 
+            else if (memberArr)
             {
                 rightSide = stack.Pop();
                 leftSide = stack.Pop();
@@ -2419,7 +2419,7 @@ namespace Compiler
                     tempVarCounter++;
                 }
                 // COME BACK HERE
-                if (rightSide.symbol.data[0][1] != "int") 
+                if (rightSide.symbol.data[0][1] != "int")
                 {
                     genError(curLine, rightSide.symbol.data[0][1], "int");
                 }
@@ -2489,15 +2489,15 @@ namespace Compiler
                     tempVarOffset += 4;
                 }
                 tempVarCounter++;
-                symbolHashSet.Add(temp.symid,temp); 
-                quad.AddRow("","AEF",leftSide.symbol.symid,rightSide.symbol.symid,temp.symid,"");
-                if (firstRowComment) 
+                symbolHashSet.Add(temp.symid, temp);
+                quad.AddRow("", "AEF", leftSide.symbol.symid, rightSide.symbol.symid, temp.symid, "");
+                if (firstRowComment)
                 {
                     commentRow = quad.GetBotRow();
                     firstRowComment = false;
                 }
             }
-            if (newFlag) 
+            if (newFlag)
             {
 
                 newFlag = false;
@@ -2507,7 +2507,7 @@ namespace Compiler
         /*
             Handle Cin
          */
-        public void CIn(int curLine) 
+        public void CIn(int curLine)
         {
 
             // End of expression perform shunting yard algorithm
@@ -2530,11 +2530,11 @@ namespace Compiler
                     }
                     leftSide = stack.Pop();
 
-                    if (stack.Count == 0) 
+                    if (stack.Count == 0)
                     {
                         if (leftSide.symbol.kind == "clit")
                         {
-                            genSAMErrorCIN(curLine,"clit");
+                            genSAMErrorCIN(curLine, "clit");
                         }
                         else if (leftSide.symbol.kind == "ilit")
                         {
@@ -2615,7 +2615,7 @@ namespace Compiler
             Verify if has a bool
          */
 
-        public void IfCheck(int _lineNum) 
+        public void IfCheck(int _lineNum)
         {
             while (oStack.Peek().token.lexeme != "(")
             {
@@ -2639,7 +2639,7 @@ namespace Compiler
 
             string[] scopeVer = scope.Split(".");
 
-            if (scopeVer[scopeVer.Length - 1] == expresisonRes.symbol.lexeme) 
+            if (scopeVer[scopeVer.Length - 1] == expresisonRes.symbol.lexeme)
             {
                 genSAMErrorIF(_lineNum, "null");
             }
@@ -2667,11 +2667,11 @@ namespace Compiler
             {
                 row[0] = beginWhile;
             }
-            else 
+            else
             {
                 quad.BackPatch(row[0].ToString(), beginWhile);
             }
-            
+
 
             SARbase expresisonRes = stack.Pop();
             // add control structure
@@ -2702,13 +2702,13 @@ namespace Compiler
         {
             Console.WriteLine(curLine + ": Found " + found + " expecting " + expectation);
             System.Environment.Exit(-1);
-        }        
+        }
         /*
             IEXIST Error
          */
         public void genSAMErrorIEXIST(int curLine, string type, string found)
         {
-            Console.WriteLine(curLine + ":  " + type +" "+ found + " not defined");
+            Console.WriteLine(curLine + ":  " + type + " " + found + " not defined");
             System.Environment.Exit(-1);
         }
         /*
@@ -2736,10 +2736,10 @@ namespace Compiler
         public void genSAMErrorIEXISTFunc(int curLine, string lexeme, List<SARbase> args, string scope)
         {
             string s = curLine + ": Function " + lexeme + "(";
-            for (int i = 0; i < args.Count; i++) 
+            for (int i = 0; i < args.Count; i++)
             {
                 s += args[i].symbol.data[0][1];
-                if (i < args.Count -1) 
+                if (i < args.Count - 1)
                 {
                     s += ',';
                 }
@@ -2834,10 +2834,10 @@ namespace Compiler
         /*
             invalid op
          */
-        public void genInvalidOp(int curLine, string type1, string lex1,string opIn, string type2, string lex2)
+        public void genInvalidOp(int curLine, string type1, string lex1, string opIn, string type2, string lex2)
         {
             string typeCheck = type1;
-            if (typeCheck.Contains("[]")) 
+            if (typeCheck.Contains("[]"))
             {
                 typeCheck = typeCheck.Replace("[", "");
                 typeCheck = typeCheck.Replace("]", "");
@@ -2852,32 +2852,38 @@ namespace Compiler
             // check TExists
             if (!classes.Contains(type1) && !(typeCheck == "int" || typeCheck == "char" || typeCheck == "bool" || typeCheck == "sym" || typeCheck == "void"))
             {
+                if (lex1 == "this") 
+                {
+                    string[] scopeArr = scope.Split('.');
+                    Console.WriteLine(curLine + ":  Invalid Operation " + scopeArr[1] + " " + lex1 + " " + opIn + " " + type2 + " " + lex2);
+                    System.Environment.Exit(-1);
+                }
                 Console.WriteLine(curLine + ": Type " + type1 + " not defined");
                 System.Environment.Exit(-1);
-            } 
-            else if (!classes.Contains(typeCheck2) && !(typeCheck2 == "int" || typeCheck2 == "char" || typeCheck2 == "bool" || typeCheck2 == "sym" || typeCheck2 == "void" || typeCheck2 == "null")) 
+            }
+            else if (!classes.Contains(typeCheck2) && !(typeCheck2 == "int" || typeCheck2 == "char" || typeCheck2 == "bool" || typeCheck2 == "sym" || typeCheck2 == "void" || typeCheck2 == "null"))
             {
                 Console.WriteLine(curLine + ": Type " + type2 + " not defined");
                 System.Environment.Exit(-1);
             }
-            Console.WriteLine(curLine + ":  Invalid Operation " + type1 + " " + lex1 + " " + opIn + " "+  type2 + " " + lex2);
+            Console.WriteLine(curLine + ":  Invalid Operation " + type1 + " " + lex1 + " " + opIn + " " + type2 + " " + lex2);
             System.Environment.Exit(-1);
         }
         /*
             and OR
          */
-        public void genSAMErrorANDOR(int curLine, string andOr, string type) 
-        {            
-            Console.WriteLine(curLine + ": " + andOr + " requires bool found "+ type);
+        public void genSAMErrorANDOR(int curLine, string andOr, string type)
+        {
+            Console.WriteLine(curLine + ": " + andOr + " requires bool found " + type);
             System.Environment.Exit(-1);
         }
         /*
             member Ref Error
          */
-        public void genSAMErrorMemRef(int curLine, string type,string lexeme, string containingClass)
+        public void genSAMErrorMemRef(int curLine, string type, string lexeme, string containingClass)
         {
             Console.WriteLine(curLine + ": " + type + " " + lexeme + " not defined/public in class " + containingClass);
-             System.Environment.Exit(-1);
+            System.Environment.Exit(-1);
         }
         /*
             member Func Ref Error
@@ -2885,10 +2891,10 @@ namespace Compiler
         public void genSAMErrorMemRefFunc(int curLine, string type, string lexeme, string containingClass, SAR_AL args)
         {
             string errorMsg = "" + curLine + ": " + type + " " + lexeme + "(";
-            for (int i = 0; i < args.args.Count; i++) 
+            for (int i = 0; i < args.args.Count; i++)
             {
                 errorMsg += args.args[i].symbol.data[0][1];
-                if (i < args.args.Count - 1) 
+                if (i < args.args.Count - 1)
                 {
                     errorMsg += ", ";
                 }
@@ -2947,7 +2953,7 @@ namespace Compiler
         /*
             Shunting Yard Algorithm, general use, 2 instances where a more specialized version was left. 
          */
-        public void SYA() 
+        public void SYA()
         {
 
             SARoperator sOp;
@@ -3011,9 +3017,9 @@ namespace Compiler
                         tempVarCounter++;
                     }
 
-                    if (rightSide.symbol.kind == "this" && rightSide.symbol.data[0].Count == 0) 
+                    if (rightSide.symbol.kind == "this" && rightSide.symbol.data[0].Count == 0)
                     {
-                        if (leftSide.symbol.lexeme == "cout") 
+                        if (leftSide.symbol.lexeme == "cout")
                         {
                             genSAMErrorCOUT(sOp.token.lineNum, rightSide.symbol.scope);
                         }
@@ -3025,22 +3031,23 @@ namespace Compiler
                             if (rightSide.symbol.kind != "true" && rightSide.symbol.kind != "false" && !(rightSide.symbol.data[0][1] == "int" || rightSide.symbol.data[0][1] == "char"))
                             {
                                 genSAMErrorCOUT(sOp.token.lineNum, rightSide.symbol.data[0][1]);
-                            } else if (!(rightSide.symbol.data[0][1] == "int" || rightSide.symbol.data[0][1] == "char")) 
+                            }
+                            else if (!(rightSide.symbol.data[0][1] == "int" || rightSide.symbol.data[0][1] == "char"))
                             {
                                 genSAMErrorCOUT(sOp.token.lineNum, rightSide.symbol.kind);
                             }
                             // Cout quad here
-                            if(rightSide.symbol.data[0][1] == "char")
+                            if (rightSide.symbol.data[0][1] == "char")
                             {
                                 quad.AddRow("", "WRITEC", rightSide.symbol.symid, "", "", comment);
                                 comment = "";
                             }
-                            else if(rightSide.symbol.data[0][1] == "int") 
+                            else if (rightSide.symbol.data[0][1] == "int")
                             {
                                 quad.AddRow("", "WRITEI", rightSide.symbol.symid, "", "", comment);
                                 comment = "";
                             }
-                            
+
                         }
                         else
                         {
@@ -3070,7 +3077,8 @@ namespace Compiler
                     else if (leftSide.symbol.kind == "this")
                     {
                         genInvalidOp(sOp.token.lineNum, leftSide.symbol.data[0][1], leftSide.symbol.lexeme, sOp.token.lexeme, rightSide.symbol.data[0][1], rightSide.symbol.lexeme);
-                    } else if (leftSide.symbol.lexeme == "cout") 
+                    }
+                    else if (leftSide.symbol.lexeme == "cout")
                     {
                         if (rightSide.symbol.kind == "true")
                         {
@@ -3126,7 +3134,7 @@ namespace Compiler
                     symbolHashSet.Add(addie.symid, addie);
                     tempVarCounter++;
                     quad.AddRow("", "ADD", leftSide.symbol.symid, rightSide.symbol.symid, tempie.xId, comment);
-                    if (firstRowComment) 
+                    if (firstRowComment)
                     {
                         firstRowComment = false;
                         commentRow = quad.GetBotRow();

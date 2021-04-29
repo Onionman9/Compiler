@@ -2,7 +2,7 @@
   "profiles": {
     "Compiler": {
       "commandName": "Project",
-      "commandLineArgs": "demoAFinal.kxi"
+      "commandLineArgs": "thangsError.kxi"
     }
   }
 }
