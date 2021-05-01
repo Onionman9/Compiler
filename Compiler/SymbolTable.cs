@@ -140,7 +140,7 @@ namespace Compiler
 
             foreach (KeyValuePair<string, Symbol> s in symbolHashSet)
             {
-                Console.WriteLine(s.Value.ToString());
+                // Console.WriteLine(s.Value.ToString());
                 symWriter.Write(s.Value.ToString());
             }
 
@@ -150,7 +150,7 @@ namespace Compiler
                 Printe Quad Table
              */
 
-            quad.ToString();
+            // quad.ToString();
 
             /*
                 Generate T Code
@@ -530,7 +530,7 @@ namespace Compiler
                     // Pop the field (methods stay on the stack)
                     if (secondPass)
                     {
-                        semanticAnalyzer.EoE();// VERIFY        
+                        semanticAnalyzer.EoE(parsie.tokenArr[0].lineNum);// VERIFY        
                     }
                 }
                 else
@@ -699,7 +699,7 @@ namespace Compiler
                     }
                     else
                     {
-                        genError(parsie.tokenArr[0].lineNum, parsie.tokenArr[0].lexeme, ")");
+                        genError(parsie.tokenArr[0].lineNum, parsie.tokenArr[0].lexeme, ") ,");
                     }
                     // CONSTRUCTOR 
                     insideMethod = true;
@@ -915,7 +915,7 @@ namespace Compiler
                     {
                         semanticAnalyzer.comment = parsie.commentLine;
                         parsie.commentLine = "";
-                        semanticAnalyzer.EoE();
+                        semanticAnalyzer.EoE(parsie.tokenArr[0].lineNum);
                         semanticAnalyzer.firstRowComment = true;
                     }
                     parsie.Update();
@@ -1103,7 +1103,7 @@ namespace Compiler
                     }
                     else
                     {
-                        genError(parsie.tokenArr[0].lineNum, parsie.tokenArr[0].lexeme, ")");
+                        genError(parsie.tokenArr[0].lineNum, parsie.tokenArr[0].lexeme, ") ,");
                     }
                     addSymbol.data[1].RemoveAt(addSymbol.data[1].Count - 1);
                     addSymbol.data[1].Add("]");
@@ -1169,7 +1169,7 @@ namespace Compiler
                     {
                         semanticAnalyzer.comment = parsie.commentLine;
                         parsie.commentLine = "";
-                        semanticAnalyzer.EoE();
+                        semanticAnalyzer.EoE(parsie.tokenArr[0].lineNum);
                     }
                 }
 
@@ -1194,7 +1194,7 @@ namespace Compiler
                 {
                     semanticAnalyzer.comment = parsie.commentLine;
                     parsie.commentLine = "";
-                    semanticAnalyzer.EoE();
+                    semanticAnalyzer.EoE(parsie.tokenArr[0].lineNum);
                 }
                 parsie.Update();
             }
@@ -1289,6 +1289,7 @@ namespace Compiler
                 parsie.Update();
                 if (secondPass)
                 {
+                    semanticAnalyzer.methodCall = false;
                     semanticAnalyzer.firstRowComment = true;
                 }
                 // 0 or more variable declaration
@@ -1452,7 +1453,7 @@ namespace Compiler
                 {
                     semanticAnalyzer.comment = parsie.commentLine;
                     parsie.commentLine = "";
-                    semanticAnalyzer.EoE();
+                    semanticAnalyzer.EoE(parsie.tokenArr[0].lineNum);
                 }
                 parsie.Update();
             }
@@ -1470,7 +1471,7 @@ namespace Compiler
                     {
                         semanticAnalyzer.comment = parsie.commentLine;
                         parsie.commentLine = "";
-                        semanticAnalyzer.EoE();
+                        semanticAnalyzer.EoE(parsie.tokenArr[0].lineNum);
                     }
                     parsie.Update();
                 }
@@ -1520,13 +1521,13 @@ namespace Compiler
                 Expression();
                 if (parsie.tokenArr[0].lexeme == ";")
                 {
-                    parsie.Update();
                     if (secondPass)
                     {
                         semanticAnalyzer.comment = parsie.commentLine;
                         parsie.commentLine = "";
-                        semanticAnalyzer.EoE();
+                        semanticAnalyzer.EoE(parsie.tokenArr[0].lineNum);
                     }
+                    parsie.Update();
                 }
                 else
                 {
@@ -1578,11 +1579,7 @@ namespace Compiler
                     if (parsie.tokenArr[0].lexeme == "else")
                     {
                         if (secondPass)
-                        {
-                            if (quad.labelCounter == 10)
-                            {
-                                Console.WriteLine("");
-                            }
+                        {                            
                             quad.labelNext = false;
                             string prevLabel = curLabel;
                             curLabel = "SKIPELSE" + quad.labelCounter;
@@ -1679,20 +1676,20 @@ namespace Compiler
                     semanticAnalyzer.OPush(new Token("=", TokenType.ASSIGNMENT_OPERATOR, parsie.tokenArr[0].lineNum));
                 }
                 // Optional return expression
-                if (IsExpression(parsie.tokenArr[0]))
+                if (IsExpression(parsie.tokenArr[0]) || (parsie.tokenArr[0].lexeme == "-" && IsExpression(parsie.tokenArr[1])))
                 {
                     Expression();
                 }
 
                 if (parsie.tokenArr[0].lexeme == ";")
                 {
-                    parsie.Update();
                     if (secondPass)
                     {
                         semanticAnalyzer.comment = parsie.commentLine;
                         parsie.commentLine = "";
-                        semanticAnalyzer.EoE();
+                        semanticAnalyzer.EoE(parsie.tokenArr[0].lineNum);
                     }
+                    parsie.Update();
                 }
                 else
                 {
@@ -1705,7 +1702,7 @@ namespace Compiler
             {
                 if (secondPass)
                 {
-                    semanticAnalyzer.IPush(parsie.tokenArr[0], scopeLevel);
+                    semanticAnalyzer.IPush(parsie.tokenArr[0], scopeLevel, parsie.tokenArr[1]);
                 }
                 parsie.Update();
                 if (parsie.tokenArr[0].lexeme == "<" && parsie.tokenArr[1].lexeme == "<")
@@ -1881,7 +1878,7 @@ namespace Compiler
                     if (secondPass)
                     {
                         semanticAnalyzer.comment = parsie.commentLine;
-                        semanticAnalyzer.EoE();
+                        semanticAnalyzer.EoE(parsie.tokenArr[0].lineNum);
                     }
                     parsie.Update();
                 }
@@ -2077,7 +2074,7 @@ namespace Compiler
          */
         public bool IsExpression(Token lexemeIn)
         {
-            if (lexemeIn.lexeme == "true" || lexemeIn.lexeme == "false" || lexemeIn.lexeme == "null" || lexemeIn.lexeme == "this" || lexemeIn.thisType.Equals(TokenType.IDENTIFIER) || lexemeIn.thisType.Equals(TokenType.NUMBER) || lexemeIn.thisType.Equals(TokenType.PARENTHESES_OPEN) || lexemeIn.thisType.Equals(TokenType.CHARACTER))
+            if ((lexemeIn.lexeme == "+" && parsie.tokenArr[1].thisType == TokenType.NUMBER) || (lexemeIn.lexeme == "-" && parsie.tokenArr[1].thisType == TokenType.NUMBER) || lexemeIn.lexeme == "true" || lexemeIn.lexeme == "false" || lexemeIn.lexeme == "null" || lexemeIn.lexeme == "this" || lexemeIn.thisType.Equals(TokenType.IDENTIFIER) || lexemeIn.thisType.Equals(TokenType.NUMBER) || lexemeIn.thisType.Equals(TokenType.PARENTHESES_OPEN) || lexemeIn.thisType.Equals(TokenType.CHARACTER))
             {
                 return true;
             }
@@ -2183,7 +2180,7 @@ namespace Compiler
                 {
                     if (secondPass)
                     {
-                        semanticAnalyzer.EALSARpush();
+                        semanticAnalyzer.EALSARpush(parsie.tokenArr[0].lineNum);
                     }
                     parsie.Update();
                 }
@@ -2199,6 +2196,11 @@ namespace Compiler
             }
             else if (parsie.tokenArr[0].thisType == TokenType.IDENTIFIER)
             {
+                // TCheck here
+                if (classes.Contains(parsie.tokenArr[0].lexeme)) 
+                {
+                    genError(parsie.tokenArr[0].lineNum, parsie.tokenArr[0].lexeme, "identifier");
+                }
                 if (secondPass)
                 {
                     // Verify identifier isnt a type
@@ -2212,10 +2214,15 @@ namespace Compiler
                     }
                     else
                     {
+                        if (semanticAnalyzer.stack.Count == 0) 
+                        {
+                            semanticAnalyzer.LPush(new Token("this", TokenType.KEYWORDS, parsie.tokenArr[0].lineNum), scopeLevel);
+                        }
                         semanticAnalyzer.notMethod = false;
+                        semanticAnalyzer.methodCall = true;
                         argList = true;
                     }
-                    semanticAnalyzer.IPush(parsie.tokenArr[0], scopeLevel);
+                    semanticAnalyzer.IPush(parsie.tokenArr[0], scopeLevel, parsie.tokenArr[1]);
                 }
                 parsie.Update();
                 // optional expressionz
@@ -2237,7 +2244,15 @@ namespace Compiler
                     {
                         while (IsExpression(parsie.tokenArr[0]))
                         {
-                            ArgumentList();
+                            if (secondPass)
+                            {
+                                semanticAnalyzer.getArgs = true;
+                            }
+                            ArgumentList(); 
+                            if (secondPass)
+                            {
+                                semanticAnalyzer.getArgs = false;
+                            }
                         }
                         if (parsie.tokenArr[0].thisType == TokenType.PARENTHESES_CLOSE)
                         {
@@ -2246,11 +2261,12 @@ namespace Compiler
                                 if (argList)
                                 {
                                     semanticAnalyzer.EAL(parsie.tokenArr[0].lineNum);
+                                    semanticAnalyzer.methodCall = false;
                                 }
                                 else
                                 {
+                                    semanticAnalyzer.EALSARpush(parsie.tokenArr[0].lineNum);
                                     semanticAnalyzer.methodCall = false;
-                                    semanticAnalyzer.EALSARpush();
                                 }
                             }
                             parsie.Update();
@@ -2268,8 +2284,8 @@ namespace Compiler
                     {
                         if (secondPass)
                         {
+                            semanticAnalyzer.EALSARpush(parsie.tokenArr[0].lineNum);
                             semanticAnalyzer.methodCall = false;
-                            semanticAnalyzer.EALSARpush();
                         }
                         parsie.Update();
                     }
@@ -2526,12 +2542,12 @@ namespace Compiler
                     }
                     else
                     {
-                        genError(parsie.tokenArr[0].lineNum, parsie.tokenArr[0].lexeme, "existing type");
+                        genErrorTExist(parsie.tokenArr[0].lineNum,parsie.tokenArr[0].lexeme);
                     }
                 }
                 else
                 {
-                    genError(parsie.tokenArr[0].lineNum, parsie.tokenArr[0].lexeme, "new");
+                    genError(parsie.tokenArr[0].lineNum, parsie.tokenArr[0].lexeme, "new, identifier");
                 }
             }
             else
@@ -2688,7 +2704,7 @@ namespace Compiler
                         semanticAnalyzer.checkie = 0;
                     }
                     semanticAnalyzer.incomingMemberRef = true;
-                    semanticAnalyzer.IPush(parsie.tokenArr[0], scopeLevel);
+                    semanticAnalyzer.IPush(parsie.tokenArr[0], scopeLevel, parsie.tokenArr[1]);
 
                     if (semanticAnalyzer.checkie == 1 && (string)quad.GetBotRow()[1] == "FRAME")
                     {

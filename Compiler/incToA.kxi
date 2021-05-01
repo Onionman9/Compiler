@@ -1,31 +1,27 @@
-﻿class DemoC{
-	private int i;
-	private int j;
-	public bool noWay;
+﻿class DemoC {
+	private int i;						// not a dup with i below
 	
-    DemoC() {}
-
-    public int mod(int i, int j) { // k = i mod j
+    DemoC() {}							// Semantics: DemxC
+   
+	public int mod(int i, int j, bool noWay) { // Syntax: static
 		int k = i / j;
 		k = i - j * k;
 		return k;
 	}
 	
-	public int gcd(int a, int b) { 
+	public int gcd(int a, int b) { // Syntax: static; Semantic: return int vs @:int
 		if (b == 0) return a;
-		return gcd(b, mod(a, b));
+		return gcd(b, mod(a, b, true));				// Semantics: not defined mod(int, int)
 	}
-	
-	public int inc(int i) { return i + 1; }
-	
 
-    public int fib(int k) { // access mod?
-		if (k == 0) return 0;
-		else if (k == 1) return 1;
-		else return (fib(k - 1) + fib(k - 2));
+
+    public int fib(int k) {						// Semantics: it vs int
+	if (k == 0) return 0;						// Syntax: retrn
+	else if (k == 1) return 1;					// Semantics
+	else return (fib(k - 1) + fib(k - 2));		// Syntax: ese; Semantics: fib(int, int), char - int, no fb(int)
     }
 	
-	public int fact(int n)
+public int fact(int n)
     {
         int result;
 
@@ -35,57 +31,136 @@
        result = fact(n-1) * n;
        return result;
     }
+	
+	public int inc(int i) { return i + 1; }	// Syntax: static
 }
 
-void kxi2021 main() {
-	DemoC dc = null;
-	int k;
-	int j;
-	int fa;
-	int fi;
-	int sum = 0;
+// Check here for Syntax and Semantic Errors
+class Bugs {								// Syntax
+      public int i;		  // Syntax: no mod
+	  private int pa;
+      private char c = null;			// Semantic: car, null + 7
+	  private int aifbwhile = 1 + 1;
+      private bool b;								// Syntax: no mod
 
-	cout << '>';
-	cin >> k;
-	cout << '\n';
-	
-	while (k != 0) {
+      Bugs(int i, char c) {				// Syntax: ';' vs ',' ; Semantic: Buugs vs Bugs
+         this.i = i;						// Semantic: no d
+         this.c = c;						// Semantic: no that, char = int
+
+	 i = 99; // This is a Syntax NO NO
+      }
+	  
+	  public int f() {}
+	  public int gxg(int pa, Bugs trueB, int pc) {  // yes
+			i = f(); // yes
+			return gxg(pa, trueB, pc); // yes
+			
+			gxg(-666, this, 0); // here
+			
+			trueB = this;  // yes
+			
+			pa = this.pa; 
+			
+			i;  // yes
+	  }
+
+      private void split(int aifbwhile) {
+      	//	spawn checkit() set i;			// Syntax: spawn
+		// block;								// Syntax: block vs wait	
+		// lck c;								// Syntax: lck vs lock
+		checkit();					// Syntax: release vs unlock, checkkit() vs c
+		
+		this.aifbwhile = aifbwhile;			
+		
+		switch(i) {							// syntax
+		case 1: break;
+		case 'a': {
+			i = i + i;
+			}
+		default: break;						// syntax
+	}
+
+      }
+
+      public void checkit() {					// Semantic: vod
+         char[] cc = new char[1000];		// Syntax: 10a00
+	 int[]  ii = new int[512];
+	 Bugs[] ss = new Bugs[256];				// Semantic: Bug vs Bugs
+
+	 cc[1] = cc[2]; 
+	 cc[31] = cc[1];   						// Semantic: char = @
+	 cc[100] = '5';						// Semantics: char = int
+	 cc[10] = c;    
+
+	 // this = null;							// Semantics: #LVar
+	 // this = null;						// Syntax: this.this
+	 
+	 ii[0] = ii[0]; 							// Syntax: no index
+	 i = 5 + i;							// Semantic: Array i not defined
+	 ii[5000] = 5 + i;
+	 ii = ii;								// Semantics: @:int = @:Bugs
+	 i = ii[0];  
+
+	 ss[0] = new Bugs(7, 'c');			// Semantics: Insect, no Bugs(char, int, int)
+	 ss[i] = ss[i+1]; 
+	 ss[i+7/3] = new Bugs(i, c); 			// Semantics: Bug vs Bugs
+
+	 return;								// Semantics: return @ 
+      } 
+}
+
+
+void kxi2021 main() {				// Syntax: multiple
+    int k;									// Semantic: it vs int
+    int j;
+	int fa;
+    // k = 0;  // can't have a statement before var declarations
+    int sum;
+	int fi;
+    int two = 2;						// Syntax: .0; Semantics: float
+    DemoC dc;								// Semantics: Dmo
+
+    cout << '>';							// Syntax: "
+    cin >> k;								// Semantics: no x vs k
+    cout << '\n';							// Syntax: "
+	while (k != 0) {							// Syntax: whle; Semantic: if requires bool
 		
 	    if (k < 0) {
-			k = 5 + k * -1 - 2;
+			k = 5 + k * -1 - two;
 			sum = 0;
 			while (k > 0) {
 				j = k;
 				while (j > 0) {
-					if ((j / 3) == 0) sum = sum + j;
+					if ((j / 3) == 0) sum = sum + j;	// Syntax: iff
 					j = j - 1;
 				}
 				k = k - 1;
 			}
 
-		cout << sum;
-		cout << '\n';
+		cout << sum;				// Semantics: cout
+		cout << '\n';				// Semantics: cout
 	    }
 	    else {
-			fa = dc.fact(k);
-			fi = dc.fib(k);
-			sum = dc.gcd(fa, fi);
-			cout << sum;
-			cout << '=';
-			cout << fa;
-			cout << '@';
-			cout << fi;
-			cout << '\n';
+		fa = dc.fact(k);					// Semantics: no fa
+		fi = dc.fib(k);						// Semantics: no fi
+		sum = dc.gcd(fa, fi);				// Semantics: this vs dc
+		cout << sum;
+		cout << '=';
+		cout << fa;						// Syntax: )
+		cout << '%';
+		cout << fi;
+		cout << '\n';
 	    }
 	
 
 	    cout << '>';
-		cin >> k;
+		cin >> k;			// Semantics: cin
 	    cout << '\n';
 
 	}
+ 	
+    cout << dc.inc(dc.inc(dc.fact(9)));
+    cout << '\n';
 
-	cout <<  dc.inc(dc.inc(dc.fact(9)));
-	cout <<  '\n' ;
-    }
 
+}

@@ -1,17 +1,196 @@
-﻿class Foo {
+﻿class DemoC {
+	private int i;
+	private int j;
+	public bool noWay;
+	
+    DemoC() {}
+   
+	public int mod(int i, int j) { // k = i mod j
+		int k = i / j;
+		k = i - j * k;
+		return k;
+	}
+	
+	public int gcd(int a, int b) { 
+		if (b == 0) return a;
+		return gcd(b, mod(a, b));
+	}
 
-       public int func(int a, Foo foo, char b) 
-       {
-       
-             Foo f = this;
-             func(10, this, 'm');
-             this = f;
 
-       }
+    public int fib(int k) {
+	if (k == 0) return 0;
+	else if (k == 1) return 1;
+	else return (fib(k - 1) + fib(k - 2));
+    }
+	
+public int fact(int n)
+    {
+        int result;
+
+       if(n==1)
+         return 1;
+
+       result = fact(n-1) * n;
+       return result;
+    }
+	
+	public int inc(int i) { return i + 1; }
 }
 
-void kxi2021 main()
-{
-    int[] arr5;
-    arr5[1]= arr5[0];
+// Check here for Syntax and Semantic Errors
+class Bugs {
+      public int i;
+      private char c = null;
+	  private int aifbwhilectruedfalse = 1 + 1; // a valid id
+      public bool b;
+	  
+	  private int ff() { return -42; }
+
+      Bugs(int i, char c) {
+         this.i = i;
+         this.c = c;
+
+	 // int i = 99; // This is a Syntax NO NO
+      }
+
+	private int f() {
+		switch (0) {
+			case 0:
+			{
+				i = i+i;
+				break;
+			}
+			case 1: i = (1 * (i + 5)*(1 - -13) / (3 + i));
+			default:
+				break;
+		}
+	}
+
+	public void gobbleSnap(int pa, Bugs pb, char pc) {
+		Bugs gnat;
+
+		// gnat = Bugs;
+		// i();
+
+		gobbleSnap(7, this, c);
+
+		this = gnat;
+		gnat = this;
+
+		// gobbleSnap;
+		
+		i = i;
+
+		
+		
+
+		return;
+
+		
+	}
+      private void split(int aifbwhilectruedfalse) {
+      	//	spawn checkit() set i;
+		// block;
+		// lck c;
+		// release checkit();
+		
+		this.aifbwhilectruedfalse = aifbwhilectruedfalse; // valid
+		
+		switch(i) {
+		case 1: break;
+		case 'a': {
+			i = i + i;
+			}
+		default: break;
+	}
+
+      }
+
+      public void checkit() {
+         char[] cc = new char[1000];
+	 int[]  ii = new int[512];
+	 Bugs[] ss = new Bugs[256];
+
+	 cc[1] = cc[2]; // yes
+	 cc[31] = cc[2];   
+	 cc[100] = 'i';
+	 cc[10] = c;     // yes
+
+	 // this = null;
+	 // this = null;
+	 
+	 ii[0] = ii[0]; 
+	 i = 5 + i;
+	 ii[5000] = 5 + i; // yes
+	 ii = ii;
+	 i = ii[0];  // yes
+	 
+	 i = i; // error
+
+	 ss[0] = new Bugs(3, 'c');
+	 ss[i] = ss[i+1]; // yes
+	 ss[i+7/3] = new Bugs(i, 'c'); // error
+
+	 return;
+      } 
+}
+
+
+void kxi2021 main() {
+    int k;
+    int j;
+	int xEss;
+
+    // k = 0;  // can't have a statement before var declarations
+    int sum;
+	int fa;
+	int fi;
+    // float two = 2.0;
+    DemoC dc = null; //
+
+    cout << '>';
+    cin >> k;
+    cout << '\n';
+	while (k != 0) {
+		
+	    if (k < 0) {
+			k = 5 + k * - 1 - 2;		
+			sum = 0;
+			while (k > 0) {
+				j = k;	
+				while (j > 0) {
+					if ((j / 3) == 0) sum = sum + j;
+					j = j - 1;
+				}
+				k = k - 1;
+			}
+
+		cout << sum;
+		cout << '\n';
+	    }
+	    else {
+		fa = dc.fact(k);
+		fi = dc.fib(k);
+		sum = dc.gcd(fa, fi);
+		cout << sum;
+		cout << '=';
+		cout << fa;
+		cout << '@';
+		cout << fi;
+		cout << '\n';
+	    }
+	
+
+	    cout << '>';
+		cin >> k;
+	    cout << '\n';
+
+	}
+ 	
+    cout << dc.inc(dc.inc(dc.fact(9)));
+    cout << '\n';
+	xEss = 3 * (4 + (6/2)) / 3;
+	cout << xEss;
+
+
 }

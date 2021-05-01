@@ -44,7 +44,7 @@ namespace Compiler
             int location = symbolHashSet[findSymId].curOffset;
 
             // Globals - They will have labels and be at the top of the code there is no ffset
-            if (symbolHashSet[findSymId].scope == "g" && symbolHashSet[findSymId].lexeme[0] != 'T' && symbolHashSet[findSymId].lexeme[0] != 'R')
+            if (symbolHashSet[findSymId].scope == "g" && (symbolHashSet[findSymId].symid[0] != 'T' && symbolHashSet[findSymId].symid[0] != 'R'))
             {
                 return 0;
             }
@@ -228,7 +228,7 @@ namespace Compiler
                         {
                             arSize = 0;
                         }// get the size of the activation record (stored in symbol table)
-                        tCodeLine += "ADI SP #" + arSize; // NOTE: ARSIZE SHOULD NEVER BE POSITIVE 
+                        tCodeLine += "ADI SP #0"; // NOTE: ARSIZE SHOULD NEVER BE POSITIVE 
                         sr.WriteLine(tCodeLine);
                         break;
                     case "MOV":
@@ -275,7 +275,7 @@ namespace Compiler
                                 sr.WriteLine("STB R0 (R4)");
                             }
                         }
-                        else if (returnStrArr[3] != "this") 
+                        else if (returnStrArr[3] == "this") 
                         {
                             sr.WriteLine("MOV R0 FP");
                             sr.WriteLine("ADI R0 #-8");
@@ -424,6 +424,7 @@ namespace Compiler
                         // Store the result at the FP (we leave the method so it is going to be overwritten by the next AR call anyway)
                         sr.WriteLine("LDR R5 (FP)");
                         sr.WriteLine("STR R3 (FP)");
+                        sr.WriteLine("MOV R3 FP");
                         sr.WriteLine("JMP R5");
                         break;
                     case "SUB":
@@ -593,6 +594,8 @@ namespace Compiler
                         tCodeLine += "LDR R1 SP // PUSH PARAM";
                         sr.WriteLine(tCodeLine);
                         sr.WriteLine("ADI R1 #" + paramOffset);
+                        sr.WriteLine("MOV R3 SP");
+                        sr.WriteLine("MOV R3 FP");
                         paramOffset -= 4;
                         // Get the Value we want to store
                         if (returnStrArr[2] == "this")
@@ -622,6 +625,7 @@ namespace Compiler
                         sr.WriteLine(tCodeLine);
                         // Get the return value
                         sr.WriteLine("LDR R2 (R3)");
+                        sr.WriteLine("MOV R3 R2");
                         // store at temp offset location 
                         offSet = getLoc(returnStrArr[2]);
                         sr.WriteLine("LDR R1 FP");
@@ -706,7 +710,7 @@ namespace Compiler
                         sr.WriteLine("STR R0 (R2)");
                         break;
                     case "READI":
-                        tCodeLine += "TRP 2";
+                        tCodeLine += "TRP 2 // READI";
                         // Store int at location
                         offSet = getLoc(returnStrArr[2]);
                         sr.WriteLine(tCodeLine);
@@ -715,7 +719,7 @@ namespace Compiler
                         sr.WriteLine("STR R3 (R2)");
                         break;
                     case "READC":
-                        tCodeLine += "TRP 4";
+                        tCodeLine += "TRP 4 // READC";
                         // store char at location
                         offSet = getLoc(returnStrArr[2]);
                         sr.WriteLine(tCodeLine);

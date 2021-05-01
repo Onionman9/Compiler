@@ -372,7 +372,7 @@ namespace Compiler
                         sw.WriteLine(curToken.ToString());// makes a log for testing
                         sw.Flush();
                     }
-                    Console.WriteLine(curToken.ToString());
+                    // Console.WriteLine(curToken.ToString());
                     curToken = peekToken;
                     peekToken = peek2Token;
                     peek2Token = null;
@@ -440,7 +440,7 @@ namespace Compiler
                                     peek2Token = new Token(curWord, TokenType.EOF, lineCounter);
                                     if (DEBUG)
                                     {
-                                        Console.WriteLine(curToken.ToString());
+                                        // Console.WriteLine(curToken.ToString());
                                     }
                                 }
                                 else
@@ -683,7 +683,7 @@ namespace Compiler
                         {
                             if (curToken != null) 
                             {
-                                Console.WriteLine(curToken.ToString());
+                                // Console.WriteLine(curToken.ToString());
                                 sw.WriteLine(curToken.ToString());// makes a log for testing
                                 sw.Flush();
                             }
@@ -753,7 +753,7 @@ namespace Compiler
             {
                 while ((!curToken.thisType.Equals(TokenType.EOF)))
                 {
-                    Console.WriteLine("DEBUG: Press 1 for Current Token, 2 for first peek, 3 for second peek, and 4 to continue");
+                    // Console.WriteLine("DEBUG: Press 1 for Current Token, 2 for first peek, 3 for second peek, and 4 to continue");
                     char c = Console.ReadKey().KeyChar;
                     Console.Clear();
                     switch (c)
@@ -780,24 +780,24 @@ namespace Compiler
                 Console.WriteLine("");
                 if (curWord != "")
                 {
-                    Console.WriteLine(curToken.ToString());
+                   //  Console.WriteLine(curToken.ToString());
                 }
                 curToken = new Token("", TokenType.EOF, lineCounter);
                 sw.WriteLine(curToken.ToString());// makes a log for testing
                 sw.Flush();
-                Console.WriteLine(curToken.ToString());
+                // Console.WriteLine(curToken.ToString());
             }
             else 
             {
                 sw.WriteLine(curToken.ToString());// makes a log for testing
                 sw.Flush();
-                Console.WriteLine(curToken.ToString());
+                // Console.WriteLine(curToken.ToString());
                 while (!curToken.thisType.Equals(TokenType.EOF)) 
                 {
                     curToken = peekToken;
                     peekToken = peek2Token;
                     peek2Token = new Token("", TokenType.EOF, lineCounter);
-                    Console.WriteLine(curToken.ToString());
+                    // Console.WriteLine(curToken.ToString());
                     sw.WriteLine(curToken.ToString());// makes a log for testing
                     sw.Flush();
                 }
