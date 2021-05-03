@@ -941,6 +941,11 @@ namespace Compiler
                             {
                                 genInvalidOp(sOp.token.lineNum, leftSide.symbol.data[0][1], leftSide.symbol.lexeme, sOp.token.lexeme, rightSide.symbol.data[0][2] + "[]", rightSide.symbol.lexeme);
                             }
+                            if (rightSide.symbol.kind == "constructor") 
+                            {
+                                genInvalidOp(sOp.token.lineNum, leftSide.symbol.data[0][1], leftSide.symbol.lexeme, sOp.token.lexeme, "new", rightSide.symbol.lexeme);
+                            }
+
                             genInvalidOp(sOp.token.lineNum, leftSide.symbol.data[0][1], leftSide.symbol.lexeme, sOp.token.lexeme, rightSide.symbol.data[0][1], rightSide.symbol.lexeme);
                             if (rightSide.symbol.kind == "null")
                             {

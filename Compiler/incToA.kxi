@@ -93,7 +93,7 @@ class Bugs {								// Syntax
 	 cc[10] = c;    
 
 	 // this = null;							// Semantics: #LVar
-	 // this = null;						// Syntax: this.this
+	 // this = new Bugs(1, 'c');						// Syntax: this.this
 	 
 	 ii[0] = ii[0]; 							// Syntax: no index
 	 i = 5 + i;							// Semantic: Array i not defined
