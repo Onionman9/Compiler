@@ -766,7 +766,7 @@ namespace Compiler
                         break;
 
                     case "REF":
-
+                        break;
                         offSet = getLoc(returnStrArr[2]);
                         tCodeLine += "MOV R0 FP";
                         sr.WriteLine(tCodeLine);
@@ -828,6 +828,7 @@ namespace Compiler
                         break;
                     case "AEF":
                         // Ex AEF L130 N126 R19 
+                        break;
                         offSet = getLoc(returnStrArr[2]);
                         if (offSet < 0)
                         {

@@ -37,7 +37,7 @@ public int fact(int n)
 
 // Check here for Syntax and Semantic Errors
 class Bugs {								// Syntax
-      public int i;		  // Syntax: no mod
+      private int i;		  // Syntax: no mod
 	  private int pa;
       private char c = null;			// Semantic: car, null + 7
 	  private int aifbwhile = 1 + 1;
@@ -47,17 +47,17 @@ class Bugs {								// Syntax
          this.i = i;						// Semantic: no d
          this.c = c;						// Semantic: no that, char = int
 
-	 i = 99; // This is a Syntax NO NO
+	 // int i = 99; // This is a Syntax NO NO
       }
 	  
 	  public int f() {}
-	  public int gxg(int pa, Bugs trueB, int pc) {  // yes
+	  public int gxg(int pa, Bugs pb, int pc) {  // yes
 			i = f(); // yes
-			return gxg(pa, trueB, pc); // yes
+			return gxg(pa,pb,pc); // yes
 			
-			gxg(-666, this, 0); // here
+			gxg(-666, this,0); // here
 			
-			trueB = this;  // yes
+			pb = this;  // yes
 			
 			pa = this.pa; 
 			
@@ -65,9 +65,9 @@ class Bugs {								// Syntax
 	  }
 
       private void split(int aifbwhile) {
-      	//	spawn checkit() set i;			// Syntax: spawn
+      		 checkit();			// Syntax: spawn
 		// block;								// Syntax: block vs wait	
-		// lck c;								// Syntax: lck vs lock
+		// lock c;								// Syntax: lck vs lock
 		checkit();					// Syntax: release vs unlock, checkkit() vs c
 		
 		this.aifbwhile = aifbwhile;			
@@ -92,16 +92,16 @@ class Bugs {								// Syntax
 	 cc[100] = '5';						// Semantics: char = int
 	 cc[10] = c;    
 
-	 // this = null;							// Semantics: #LVar
-	 // this = new Bugs(1, 'c');						// Syntax: this.this
+	 // 0 = this;this = null;							// Semantics: #LVar
+	 this.i = null;						// Syntax: this.this
 	 
-	 ii[0] = ii[0]; 							// Syntax: no index
+	 ii[1] = ii[1]; 							// Syntax: no index
 	 i = 5 + i;							// Semantic: Array i not defined
 	 ii[5000] = 5 + i;
 	 ii = ii;								// Semantics: @:int = @:Bugs
 	 i = ii[0];  
 
-	 ss[0] = new Bugs(7, 'c');			// Semantics: Insect, no Bugs(char, int, int)
+	 ss[0] = new Bugs(0,'c');			// Semantics: Insect, no Bugs(char, int, int)
 	 ss[i] = ss[i+1]; 
 	 ss[i+7/3] = new Bugs(i, c); 			// Semantics: Bug vs Bugs
 
@@ -137,8 +137,8 @@ void kxi2021 main() {				// Syntax: multiple
 				k = k - 1;
 			}
 
-		cout << sum;				// Semantics: cout
-		cout << '\n';				// Semantics: cout
+		cout << (sum);				// Semantics: cout
+		cout << ('\n');				// Semantics: cout
 	    }
 	    else {
 		fa = dc.fact(k);					// Semantics: no fa
@@ -146,7 +146,7 @@ void kxi2021 main() {				// Syntax: multiple
 		sum = dc.gcd(fa, fi);				// Semantics: this vs dc
 		cout << sum;
 		cout << '=';
-		cout << fa;						// Syntax: )
+		cout << (fa);						// Syntax: )
 		cout << '%';
 		cout << fi;
 		cout << '\n';
@@ -154,7 +154,7 @@ void kxi2021 main() {				// Syntax: multiple
 	
 
 	    cout << '>';
-		cin >> k;			// Semantics: cin
+	    cin >> k;				// Semantics: cin
 	    cout << '\n';
 
 	}

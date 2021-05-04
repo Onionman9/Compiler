@@ -136,7 +136,7 @@ namespace Compiler
             /*
                 Print Symbol Table
              */
-            symWriter = new StreamWriter("symTble.txt");
+            /*symWriter = new StreamWriter("symTble.txt");
 
             foreach (KeyValuePair<string, Symbol> s in symbolHashSet)
             {
@@ -144,7 +144,7 @@ namespace Compiler
                 symWriter.Write(s.Value.ToString());
             }
 
-            symWriter.Close();
+            symWriter.Close();*/
 
             /*
                 Printe Quad Table
@@ -1495,7 +1495,7 @@ namespace Compiler
             parsie.commentLine = "";
 
             if (secondPass)
-            {
+            {               
                 semanticAnalyzer.firstRowComment = true;
             }
             if (parsie.tokenArr[0].lexeme != "if")
@@ -1531,7 +1531,19 @@ namespace Compiler
                 }
                 else
                 {
-                    genError(parsie.tokenArr[0].lineNum, parsie.tokenArr[0].lexeme, ";");
+                    if (IsExpressionz(parsie.tokenArr[0]))
+                    {
+                        Expressionz();
+                        if (parsie.tokenArr[0].lexeme != ";") 
+                        {
+                            genError(parsie.tokenArr[0].lineNum, parsie.tokenArr[0].lexeme, ";");
+                        }
+                        parsie.Update();
+                    }
+                    else
+                    {
+                        genError(parsie.tokenArr[0].lineNum, parsie.tokenArr[0].lexeme, ";");
+                    }
                 }
             }
             // Statement if
@@ -1756,7 +1768,7 @@ namespace Compiler
 
                     if (parsie.tokenArr[1].lexeme == "<")
                     {
-                        genError(parsie.tokenArr[0].lineNum, parsie.tokenArr[0].lexeme + parsie.tokenArr[1].lexeme, "<<");
+                        genError(parsie.tokenArr[0].lineNum, parsie.tokenArr[0].lexeme + parsie.tokenArr[1].lexeme, ">>");
                     }
                     genError(parsie.tokenArr[0].lineNum, parsie.tokenArr[0].lexeme, ">> ");
                 }
@@ -2197,29 +2209,20 @@ namespace Compiler
             else if (parsie.tokenArr[0].thisType == TokenType.IDENTIFIER)
             {
                 // TCheck here
-                if (classes.Contains(parsie.tokenArr[0].lexeme)) 
-                {
-                    genError(parsie.tokenArr[0].lineNum, parsie.tokenArr[0].lexeme, "identifier");
-                }
                 if (secondPass)
                 {
-                    // Verify identifier isnt a type
-                    if (classes.Contains(parsie.tokenArr[0].lexeme))
-                    {
-                        genError(parsie.tokenArr[0].lineNum, parsie.tokenArr[0].lexeme, "identifier");
-                    }
                     if (parsie.tokenArr[1].lexeme != "(")
                     {
                         semanticAnalyzer.notMethod = true;
                     }
                     else
                     {
-                        if (semanticAnalyzer.stack.Count == 0) 
+                        semanticAnalyzer.notMethod = false;
+                        semanticAnalyzer.methodCall = true;
+                        if (semanticAnalyzer.stack.Count == 0)
                         {
                             semanticAnalyzer.LPush(new Token("this", TokenType.KEYWORDS, parsie.tokenArr[0].lineNum), scopeLevel);
                         }
-                        semanticAnalyzer.notMethod = false;
-                        semanticAnalyzer.methodCall = true;
                         argList = true;
                     }
                     semanticAnalyzer.IPush(parsie.tokenArr[0], scopeLevel, parsie.tokenArr[1]);

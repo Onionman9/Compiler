@@ -79,6 +79,7 @@ namespace Compiler
             SARinstance delayedPush = null;
             bool refAdd = false;
             bool foundRef = false;
+            string curClass = "" ;
             if (parentId == "this")
             {
                 // decompose scope on this and check if member exists
@@ -93,14 +94,31 @@ namespace Compiler
                 while (scopeClimb.Count > 1 && !foundNearest)
                 {
                     scopeCheck = "";
-                    for (int i = 0; i < scopeClimb.Count; i++)
+                    if (parentId == "this")
                     {
-                        scopeCheck += scopeClimb[i];
-                        if (i < scopeClimb.Count - 1)
+                        curClass = scopeClimb[1];
+                        for (int i = 0; i < scopeClimb.Count -1; i++)
                         {
-                            scopeCheck += ".";
+                            
+                            scopeCheck += scopeClimb[i];
+                            if (i < scopeClimb.Count - 2)
+                            {
+                                scopeCheck += ".";
+                            }
                         }
                     }
+                    else 
+                    {
+                        for (int i = 0; i < scopeClimb.Count; i++)
+                        {
+                            scopeCheck += scopeClimb[i];
+                            if (i < scopeClimb.Count - 1)
+                            {
+                                scopeCheck += ".";
+                            }
+                        }
+                    }
+
                     foreach (KeyValuePair<string, Symbol> verifySym in symbolHashSet)
                     {
                         if (foundNearest)
@@ -150,6 +168,10 @@ namespace Compiler
                 // If we don't find the symbol throw an error
                 if (!foundNearest)
                 {
+                    if (curClass != "") 
+                    {
+                        genSAMErrorIEXIST(inToken.lineNum, curClass, inToken.lexeme);
+                    }
                     // should not be genError
                     genSAMErrorIEXIST(inToken.lineNum,"this",inToken.lexeme);
                 }
@@ -296,6 +318,11 @@ namespace Compiler
                                 }
                                 else
                                 {
+                                    if (verifySym.Value.data[1][1] == "private")
+                                    {
+                                        instanceCount--;
+                                        break;
+                                    }
                                     SARbase left = stack.Pop();
                                     // It exists create SAR and push it onto the stack
                                     SARref memRef = new SARref(left.xId + "." + inToken.lexeme, left, new SARinstance(inToken.lexeme, verifySym.Value));
@@ -654,10 +681,17 @@ namespace Compiler
             {
                 oStack = new Stack<SARbase>();
             }
+
+
             // verify valid operators
             if (inToken.lexeme == "and" || inToken.lexeme == "or" || inToken.lexeme == "==" || inToken.lexeme == "!=" || inToken.lexeme == "<=" || inToken.lexeme == ">=" || inToken.lexeme == "<"
                 || inToken.lexeme == ">" || inToken.lexeme == "+" || inToken.lexeme == "-" || inToken.lexeme == "*" || inToken.lexeme == "/" || inToken.lexeme == "=" || inToken.lexeme == "(" || inToken.lexeme == "[")
             {
+                if (oStack.Count == 0)
+                {
+                    oStack.Push(new SARoperator(inToken));
+                    return;
+                }
                 if (inToken.lexeme != "=" && inToken.thisType.Equals(TokenType.MATH_OPERATORS) && (oStack.Peek().token.lexeme.Equals("*") || oStack.Peek().token.lexeme.Equals("/")))
                 {
                     /*
@@ -937,11 +971,11 @@ namespace Compiler
                     case "=":
                         if (leftSide.symbol.kind == "this")
                         {
-                            if (rightSide.symbol.data[0][1] == "@:") 
+                            if (rightSide.symbol.data[0][1] == "@:")
                             {
                                 genInvalidOp(sOp.token.lineNum, leftSide.symbol.data[0][1], leftSide.symbol.lexeme, sOp.token.lexeme, rightSide.symbol.data[0][2] + "[]", rightSide.symbol.lexeme);
                             }
-                            if (rightSide.symbol.kind == "constructor") 
+                            if (rightSide.symbol.kind == "constructor")
                             {
                                 genInvalidOp(sOp.token.lineNum, leftSide.symbol.data[0][1], leftSide.symbol.lexeme, sOp.token.lexeme, "new", rightSide.symbol.lexeme);
                             }
@@ -1024,6 +1058,18 @@ namespace Compiler
                             }
                             else
                             {
+                                if (rightSide.xId[0] == 'T')
+                                {
+                                    genInvalidOp(sOp.token.lineNum, leftSide.symbol.data[0][1], leftSide.symbol.lexeme, sOp.token.lexeme, rightSide.symbol.data[0][1], rightSide.symbol.symid);
+                                }
+                                else if (rightSide.xId[0] != 'T' && leftSide.xId[0] == 'T')
+                                {
+                                    genInvalidOp(sOp.token.lineNum, leftSide.symbol.data[0][1], leftSide.symbol.symid, sOp.token.lexeme, rightSide.symbol.data[0][1], rightSide.symbol.lexeme);
+                                }
+                                else if (rightSide.xId[0] == 'T' && leftSide.xId[0] == 'T')
+                                {
+                                    genInvalidOp(sOp.token.lineNum, leftSide.symbol.data[0][1], leftSide.symbol.symid, sOp.token.lexeme, rightSide.symbol.data[0][1], rightSide.symbol.symid);
+                                }
                                 genInvalidOp(sOp.token.lineNum, leftSide.symbol.data[0][1], leftSide.symbol.lexeme, sOp.token.lexeme, rightSide.symbol.data[0][1], rightSide.symbol.lexeme);
                             }
                         }
@@ -1091,6 +1137,18 @@ namespace Compiler
                         }
                         if (!leftSide.symbol.data[0][1].Equals(rightSide.symbol.data[0][1]))
                         {
+                            if (rightSide.xId[0] == 'T')
+                            {
+                                genInvalidOp(sOp.token.lineNum, leftSide.symbol.data[0][1], leftSide.symbol.lexeme, sOp.token.lexeme, rightSide.symbol.data[0][1], rightSide.symbol.symid);
+                            }
+                            else if (rightSide.xId[0] != 'T' && leftSide.xId[0] == 'T')
+                            {
+                                genInvalidOp(sOp.token.lineNum, leftSide.symbol.data[0][1], leftSide.symbol.symid, sOp.token.lexeme, rightSide.symbol.data[0][1], rightSide.symbol.lexeme);
+                            }
+                            else if (rightSide.xId[0] == 'T' && leftSide.xId[0] == 'T')
+                            {
+                                genInvalidOp(sOp.token.lineNum, leftSide.symbol.data[0][1], leftSide.symbol.symid, sOp.token.lexeme, rightSide.symbol.data[0][1], rightSide.symbol.symid);
+                            }
                             genInvalidOp(sOp.token.lineNum, leftSide.symbol.data[0][1], leftSide.symbol.lexeme, sOp.token.lexeme, rightSide.symbol.data[0][1], rightSide.symbol.lexeme);
                         }
                         tempie = new SARtemp("T" + tempVarCounter, leftSide, sOp, rightSide);
@@ -1132,6 +1190,18 @@ namespace Compiler
                         }
                         if (!leftSide.symbol.data[0][1].Equals(rightSide.symbol.data[0][1]) && !rightSide.symbol.data[0][1].Equals("null"))
                         {
+                            if (rightSide.xId[0] == 'T')
+                            {
+                                genInvalidOp(sOp.token.lineNum, leftSide.symbol.data[0][1], leftSide.symbol.lexeme, sOp.token.lexeme, rightSide.symbol.data[0][1], rightSide.symbol.symid);
+                            }
+                            else if (rightSide.xId[0] != 'T' && leftSide.xId[0] == 'T')
+                            {
+                                genInvalidOp(sOp.token.lineNum, leftSide.symbol.data[0][1], leftSide.symbol.symid, sOp.token.lexeme, rightSide.symbol.data[0][1], rightSide.symbol.lexeme);
+                            }
+                            else if (rightSide.xId[0] == 'T' && leftSide.xId[0] == 'T')
+                            {
+                                genInvalidOp(sOp.token.lineNum, leftSide.symbol.data[0][1], leftSide.symbol.symid, sOp.token.lexeme, rightSide.symbol.data[0][1], rightSide.symbol.symid);
+                            }
                             genInvalidOp(sOp.token.lineNum, leftSide.symbol.data[0][1], leftSide.symbol.lexeme, sOp.token.lexeme, rightSide.symbol.data[0][1], rightSide.symbol.lexeme);
                         }
                         tempie = new SARtemp("T" + tempVarCounter, leftSide, sOp, rightSide);
@@ -1173,6 +1243,18 @@ namespace Compiler
                         }
                         if (!leftSide.symbol.data[0][1].Equals(rightSide.symbol.data[0][1]) && !rightSide.symbol.data[0][1].Equals("null"))
                         {
+                            if (rightSide.xId[0] == 'T')
+                            {
+                                genInvalidOp(sOp.token.lineNum, leftSide.symbol.data[0][1], leftSide.symbol.lexeme, sOp.token.lexeme, rightSide.symbol.data[0][1], rightSide.symbol.symid);
+                            }
+                            else if (rightSide.xId[0] != 'T' && leftSide.xId[0] == 'T')
+                            {
+                                genInvalidOp(sOp.token.lineNum, leftSide.symbol.data[0][1], leftSide.symbol.symid, sOp.token.lexeme, rightSide.symbol.data[0][1], rightSide.symbol.lexeme);
+                            }
+                            else if (rightSide.xId[0] == 'T' && leftSide.xId[0] == 'T')
+                            {
+                                genInvalidOp(sOp.token.lineNum, leftSide.symbol.data[0][1], leftSide.symbol.symid, sOp.token.lexeme, rightSide.symbol.data[0][1], rightSide.symbol.symid);
+                            }
                             genInvalidOp(sOp.token.lineNum, leftSide.symbol.data[0][1], leftSide.symbol.lexeme, sOp.token.lexeme, rightSide.symbol.data[0][1], rightSide.symbol.lexeme);
                         }
                         tempie = new SARtemp("T" + tempVarCounter, leftSide, sOp, rightSide);
@@ -1214,6 +1296,18 @@ namespace Compiler
                         }
                         if (!leftSide.symbol.data[0][1].Equals(rightSide.symbol.data[0][1]) && !rightSide.symbol.data[0][1].Equals("null"))
                         {
+                            if (rightSide.xId[0] == 'T')
+                            {
+                                genInvalidOp(sOp.token.lineNum, leftSide.symbol.data[0][1], leftSide.symbol.lexeme, sOp.token.lexeme, rightSide.symbol.data[0][1], rightSide.symbol.symid);
+                            }
+                            else if (rightSide.xId[0] != 'T' && leftSide.xId[0] == 'T')
+                            {
+                                genInvalidOp(sOp.token.lineNum, leftSide.symbol.data[0][1], leftSide.symbol.symid, sOp.token.lexeme, rightSide.symbol.data[0][1], rightSide.symbol.lexeme);
+                            }
+                            else if (rightSide.xId[0] == 'T' && leftSide.xId[0] == 'T')
+                            {
+                                genInvalidOp(sOp.token.lineNum, leftSide.symbol.data[0][1], leftSide.symbol.symid, sOp.token.lexeme, rightSide.symbol.data[0][1], rightSide.symbol.symid);
+                            }
                             genInvalidOp(sOp.token.lineNum, leftSide.symbol.data[0][1], leftSide.symbol.lexeme, sOp.token.lexeme, rightSide.symbol.data[0][1], rightSide.symbol.lexeme);
                         }
                         tempie = new SARtemp("T" + tempVarCounter, leftSide, sOp, rightSide);
@@ -1260,7 +1354,18 @@ namespace Compiler
                         }
                         if (!leftSide.symbol.data[0][1].Equals(rightSide.symbol.data[0][1]) && !rightSide.symbol.data[0][1].Equals("null"))
                         {
-
+                            if (rightSide.xId[0] == 'T' && leftSide.xId[0] != 'T')
+                            {
+                                genInvalidOp(sOp.token.lineNum, leftSide.symbol.data[0][1], leftSide.symbol.lexeme, sOp.token.lexeme, rightSide.symbol.data[0][1], rightSide.symbol.symid);
+                            }
+                            else if (rightSide.xId[0] != 'T' && leftSide.xId[0] == 'T')
+                            {
+                                genInvalidOp(sOp.token.lineNum, leftSide.symbol.data[0][1], leftSide.symbol.symid, sOp.token.lexeme, rightSide.symbol.data[0][1], rightSide.symbol.lexeme);                            
+                            } 
+                            else if (rightSide.xId[0] == 'T' && leftSide.xId[0] == 'T')
+                            {
+                                genInvalidOp(sOp.token.lineNum, leftSide.symbol.data[0][1], leftSide.symbol.symid, sOp.token.lexeme, rightSide.symbol.data[0][1], rightSide.symbol.symid);
+                            }
                             genInvalidOp(sOp.token.lineNum, leftSide.symbol.data[0][1], leftSide.symbol.lexeme, sOp.token.lexeme, rightSide.symbol.data[0][1], rightSide.symbol.lexeme);
                         }
                         tempie = new SARtemp("T" + tempVarCounter, leftSide, sOp, rightSide);
@@ -2205,6 +2310,12 @@ namespace Compiler
                             }
                             // Get the containing function
                             // Check args match params 
+                            if (leftSide.symbol.lexeme == "cout")
+                            {
+                                stack.Push(leftSide);
+                                stack.Push(rightSide);
+                                break;                            
+                            }
                             stack.Push(leftSide);
                             break;
                         }
@@ -3285,6 +3396,18 @@ namespace Compiler
                     }
                     else if (!leftSide.symbol.data[0][1].Equals(rightSide.symbol.data[0][1]) && !rightSide.symbol.data[0][1].Equals("null"))
                     {
+                        if (rightSide.xId[0] == 'T')
+                        {
+                            genInvalidOp(sOp.token.lineNum, leftSide.symbol.data[0][1], leftSide.symbol.lexeme, sOp.token.lexeme, rightSide.symbol.data[0][1], rightSide.symbol.symid);
+                        }
+                        else if (rightSide.xId[0] != 'T' && leftSide.xId[0] == 'T')
+                        {
+                            genInvalidOp(sOp.token.lineNum, leftSide.symbol.data[0][1], leftSide.symbol.symid, sOp.token.lexeme, rightSide.symbol.data[0][1], rightSide.symbol.lexeme);
+                        }
+                        else if (rightSide.xId[0] == 'T' && leftSide.xId[0] == 'T')
+                        {
+                            genInvalidOp(sOp.token.lineNum, leftSide.symbol.data[0][1], leftSide.symbol.symid, sOp.token.lexeme, rightSide.symbol.data[0][1], rightSide.symbol.symid);
+                        }
                         genInvalidOp(sOp.token.lineNum, leftSide.symbol.data[0][1], leftSide.symbol.lexeme, sOp.token.lexeme, rightSide.symbol.data[0][1], rightSide.symbol.lexeme);
                     }
                     if (leftSide.symbol.data[0][1].Equals("null") || rightSide.symbol.data[0][1].Equals("null"))
@@ -3334,6 +3457,18 @@ namespace Compiler
                     }
                     else if (!leftSide.symbol.data[0][1].Equals(rightSide.symbol.data[0][1]) && !rightSide.symbol.data[0][1].Equals("null"))
                     {
+                        if (rightSide.xId[0] == 'T')
+                        {
+                            genInvalidOp(sOp.token.lineNum, leftSide.symbol.data[0][1], leftSide.symbol.lexeme, sOp.token.lexeme, rightSide.symbol.data[0][1], rightSide.symbol.symid);
+                        }
+                        else if (rightSide.xId[0] != 'T' && leftSide.xId[0] == 'T')
+                        {
+                            genInvalidOp(sOp.token.lineNum, leftSide.symbol.data[0][1], leftSide.symbol.symid, sOp.token.lexeme, rightSide.symbol.data[0][1], rightSide.symbol.lexeme);
+                        }
+                        else if (rightSide.xId[0] == 'T' && leftSide.xId[0] == 'T')
+                        {
+                            genInvalidOp(sOp.token.lineNum, leftSide.symbol.data[0][1], leftSide.symbol.symid, sOp.token.lexeme, rightSide.symbol.data[0][1], rightSide.symbol.symid);
+                        }
                         genInvalidOp(sOp.token.lineNum, leftSide.symbol.data[0][1], leftSide.symbol.lexeme, sOp.token.lexeme, rightSide.symbol.data[0][1], rightSide.symbol.lexeme);
                     }
 
@@ -3381,8 +3516,20 @@ namespace Compiler
                     {
                         genInvalidOp(sOp.token.lineNum, leftSide.symbol.data[0][1], leftSide.symbol.lexeme, sOp.token.lexeme, rightSide.symbol.data[0][2] + "[]", rightSide.symbol.lexeme);
                     }
-                    if (!leftSide.symbol.data[0][1].Equals(rightSide.symbol.data[0][1]) && !rightSide.symbol.data[0][1].Equals("null"))
+                    else if (!leftSide.symbol.data[0][1].Equals(rightSide.symbol.data[0][1]) && !rightSide.symbol.data[0][1].Equals("null"))
                     {
+                        if (rightSide.xId[0] == 'T')
+                        {
+                            genInvalidOp(sOp.token.lineNum, leftSide.symbol.data[0][1], leftSide.symbol.lexeme, sOp.token.lexeme, rightSide.symbol.data[0][1], rightSide.symbol.symid);
+                        }
+                        else if (rightSide.xId[0] != 'T' && leftSide.xId[0] == 'T')
+                        {
+                            genInvalidOp(sOp.token.lineNum, leftSide.symbol.data[0][1], leftSide.symbol.symid, sOp.token.lexeme, rightSide.symbol.data[0][1], rightSide.symbol.lexeme);
+                        }
+                        else if (rightSide.xId[0] == 'T' && leftSide.xId[0] == 'T')
+                        {
+                            genInvalidOp(sOp.token.lineNum, leftSide.symbol.data[0][1], leftSide.symbol.symid, sOp.token.lexeme, rightSide.symbol.data[0][1], rightSide.symbol.symid);
+                        }
                         genInvalidOp(sOp.token.lineNum, leftSide.symbol.data[0][1], leftSide.symbol.lexeme, sOp.token.lexeme, rightSide.symbol.data[0][1], rightSide.symbol.lexeme);
                     }
 
@@ -3430,8 +3577,20 @@ namespace Compiler
                     {
                         genInvalidOp(sOp.token.lineNum, leftSide.symbol.data[0][1], leftSide.symbol.lexeme, sOp.token.lexeme, rightSide.symbol.data[0][2] + "[]", rightSide.symbol.lexeme);
                     }
-                    if (!leftSide.symbol.data[0][1].Equals(rightSide.symbol.data[0][1]) && !rightSide.symbol.data[0][1].Equals("null"))
+                    else if (!leftSide.symbol.data[0][1].Equals(rightSide.symbol.data[0][1]) && !rightSide.symbol.data[0][1].Equals("null"))
                     {
+                        if (rightSide.xId[0] == 'T')
+                        {
+                            genInvalidOp(sOp.token.lineNum, leftSide.symbol.data[0][1], leftSide.symbol.lexeme, sOp.token.lexeme, rightSide.symbol.data[0][1], rightSide.symbol.symid);
+                        }
+                        else if (rightSide.xId[0] != 'T' && leftSide.xId[0] == 'T')
+                        {
+                            genInvalidOp(sOp.token.lineNum, leftSide.symbol.data[0][1], leftSide.symbol.symid, sOp.token.lexeme, rightSide.symbol.data[0][1], rightSide.symbol.lexeme);
+                        }
+                        else if (rightSide.xId[0] == 'T' && leftSide.xId[0] == 'T')
+                        {
+                            genInvalidOp(sOp.token.lineNum, leftSide.symbol.data[0][1], leftSide.symbol.symid, sOp.token.lexeme, rightSide.symbol.data[0][1], rightSide.symbol.symid);
+                        }
                         genInvalidOp(sOp.token.lineNum, leftSide.symbol.data[0][1], leftSide.symbol.lexeme, sOp.token.lexeme, rightSide.symbol.data[0][1], rightSide.symbol.lexeme);
                     }
 
@@ -3484,8 +3643,20 @@ namespace Compiler
                     {
                         genInvalidOp(sOp.token.lineNum, leftSide.symbol.data[0][1], leftSide.symbol.lexeme, sOp.token.lexeme, rightSide.symbol.data[0][2] + "[]", rightSide.symbol.lexeme);
                     }
-                    if (!leftSide.symbol.data[0][1].Equals(rightSide.symbol.data[0][1]) && !rightSide.symbol.data[0][1].Equals("null"))
+                    else if (!leftSide.symbol.data[0][1].Equals(rightSide.symbol.data[0][1]) && !rightSide.symbol.data[0][1].Equals("null"))
                     {
+                        if (rightSide.xId[0] == 'T')
+                        {
+                            genInvalidOp(sOp.token.lineNum, leftSide.symbol.data[0][1], leftSide.symbol.lexeme, sOp.token.lexeme, rightSide.symbol.data[0][1], rightSide.symbol.symid);
+                        }
+                        else if (rightSide.xId[0] != 'T' && leftSide.xId[0] == 'T')
+                        {
+                            genInvalidOp(sOp.token.lineNum, leftSide.symbol.data[0][1], leftSide.symbol.symid, sOp.token.lexeme, rightSide.symbol.data[0][1], rightSide.symbol.lexeme);
+                        }
+                        else if (rightSide.xId[0] == 'T' && leftSide.xId[0] == 'T')
+                        {
+                            genInvalidOp(sOp.token.lineNum, leftSide.symbol.data[0][1], leftSide.symbol.symid, sOp.token.lexeme, rightSide.symbol.data[0][1], rightSide.symbol.symid);
+                        }
                         genInvalidOp(sOp.token.lineNum, leftSide.symbol.data[0][1], leftSide.symbol.lexeme, sOp.token.lexeme, rightSide.symbol.data[0][1], rightSide.symbol.lexeme);
                     }
                     tempie = new SARtemp("T" + tempVarCounter, leftSide, sOp, rightSide);
