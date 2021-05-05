@@ -1495,7 +1495,7 @@ namespace Compiler
             parsie.commentLine = "";
 
             if (secondPass)
-            {               
+            {
                 semanticAnalyzer.firstRowComment = true;
             }
             if (parsie.tokenArr[0].lexeme != "if")
@@ -1906,7 +1906,7 @@ namespace Compiler
             }
             else
             {
-                genError(parsie.tokenArr[0].lineNum, parsie.tokenArr[0].lexeme, "case");
+                genError(parsie.tokenArr[0].lineNum, parsie.tokenArr[0].lexeme, "case default");
             }
         }
         /*
@@ -2531,8 +2531,8 @@ namespace Compiler
                     parsie.Update();
                     if (secondPass && TypeExists(parsie.tokenArr[0]))
                     {
-                        semanticAnalyzer.TPush(parsie.tokenArr[0].lexeme);
                         semanticAnalyzer.newFlag = true;
+                        semanticAnalyzer.TPush(parsie.tokenArr[0].lexeme);
                         string newType = parsie.tokenArr[0].lexeme;
                         parsie.Update();
                         NewDecaration(newType);
@@ -2545,7 +2545,11 @@ namespace Compiler
                     }
                     else
                     {
-                        genErrorTExist(parsie.tokenArr[0].lineNum,parsie.tokenArr[0].lexeme);
+                        semanticAnalyzer.newFlag = true;
+                        semanticAnalyzer.TPush(parsie.tokenArr[0].lexeme);
+                        string newType = parsie.tokenArr[0].lexeme;
+                        parsie.Update();
+                        NewDecaration(newType);
                     }
                 }
                 else

@@ -3,7 +3,7 @@
 	
     DemoC() {}							// Semantics: DemxC
    
-	public int mod(int i, int j, bool noWay) { // Syntax: static
+	public int mod(int i, int j) { // Syntax: static
 		int k = i / j;
 		k = i - j * k;
 		return k;
@@ -11,7 +11,7 @@
 	
 	public int gcd(int a, int b) { // Syntax: static; Semantic: return int vs @:int
 		if (b == 0) return a;
-		return gcd(b, mod(a, b, true));				// Semantics: not defined mod(int, int)
+		return gcd(b, mod(a, b));				// Semantics: not defined mod(int, int)
 	}
 
 
@@ -39,7 +39,7 @@ public int fact(int n)
 class Bugs {								// Syntax
       private int i;		  // Syntax: no mod
 	  private int pa;
-      private char c = null;			// Semantic: car, null + 7
+      private char c = '7';			// Semantic: car, null + 7
 	  private int aifbwhile = 1 + 1;
       private bool b;								// Syntax: no mod
 
@@ -53,9 +53,9 @@ class Bugs {								// Syntax
 	  public int f() {}
 	  public int gxg(int pa, Bugs pb, int pc) {  // yes
 			i = f(); // yes
-			return gxg(pa,pb,pc); // yes
+			// return gxg; // yes
 			
-			gxg(-666, this,0); // here
+			gxg(-666, this, 0); // here
 			
 			pb = this;  // yes
 			
@@ -65,10 +65,10 @@ class Bugs {								// Syntax
 	  }
 
       private void split(int aifbwhile) {
-      		 checkit();			// Syntax: spawn
+      	//	spawn checkit() set i;			// Syntax: spawn
 		// block;								// Syntax: block vs wait	
-		// lock c;								// Syntax: lck vs lock
-		checkit();					// Syntax: release vs unlock, checkkit() vs c
+		// lck c;								// Syntax: lck vs lock
+		// release checkit();					// Syntax: release vs unlock, checkkit() vs c
 		
 		this.aifbwhile = aifbwhile;			
 		
@@ -77,7 +77,8 @@ class Bugs {								// Syntax
 		case 'a': {
 			i = i + i;
 			}
-		default: break;						// syntax
+		case 2: break;						// syntax
+		default:break;
 	}
 
       }
@@ -89,19 +90,19 @@ class Bugs {								// Syntax
 
 	 cc[1] = cc[2]; 
 	 cc[31] = cc[1];   						// Semantic: char = @
-	 cc[100] = '5';						// Semantics: char = int
+	 cc[100] = cc[5 + i];						// Semantics: char = int
 	 cc[10] = c;    
 
-	 // 0 = this;this = null;							// Semantics: #LVar
-	 this.i = null;						// Syntax: this.this
+	 // this = null;							// Semantics: #LVar
+	 // this.this = null;						// Syntax: this.this
 	 
 	 ii[1] = ii[1]; 							// Syntax: no index
-	 i = 5 + i;							// Semantic: Array i not defined
+	 ii[4] = 5 + i;							// Semantic: Array i not defined
 	 ii[5000] = 5 + i;
-	 ii = ii;								// Semantics: @:int = @:Bugs
+	 ss = ss;								// Semantics: @:int = @:Bugs
 	 i = ii[0];  
 
-	 ss[0] = new Bugs(0,'c');			// Semantics: Insect, no Bugs(char, int, int)
+	 ss[0] = new Bugs(7,'c');			// Semantics: Insect, no Bugs(char, int, int)
 	 ss[i] = ss[i+1]; 
 	 ss[i+7/3] = new Bugs(i, c); 			// Semantics: Bug vs Bugs
 
@@ -146,7 +147,7 @@ void kxi2021 main() {				// Syntax: multiple
 		sum = dc.gcd(fa, fi);				// Semantics: this vs dc
 		cout << sum;
 		cout << '=';
-		cout << (fa);						// Syntax: )
+		cout << fa;						// Syntax: )
 		cout << '%';
 		cout << fi;
 		cout << '\n';
@@ -164,3 +165,5 @@ void kxi2021 main() {				// Syntax: multiple
 
 
 }
+// this is an error							// Syntax
+//class NoGo { }

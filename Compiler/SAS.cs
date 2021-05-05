@@ -175,8 +175,40 @@ namespace Compiler
                     // should not be genError
                     genSAMErrorIEXIST(inToken.lineNum,"this",inToken.lexeme);
                 }
+                SARref reffie = (SARref)stack.Pop();
 
+                Symbol addThis = new Symbol(reffie.symbol.scope, "R" + tempVarCounter, reffie.xId, reffie.symbol.data[0][1]);
                 incomingMemberRef = false;
+
+                // add to refs
+
+                addThis.byteSize = 4;
+                addThis.curOffset = tempVarOffset;
+                addThis.data[0] = reffie.storedData[1].symbol.data[0];
+                addThis.data[1] = reffie.storedData[1].symbol.data[1];
+                refAdd = true;
+                // Verify you are inside a method here;
+                if (insideMethod)
+                {
+                    tempVarOffset -= 4;
+                }
+                else
+                {
+                    tempVarOffset += 4;
+                }
+                tempVarCounter++;
+                symbolHashSet.Add(addThis.symid,addThis);
+                // Push line onto quad
+                // LIKELY WE NEED TO ADD THE SYMBOL HERE
+                quad.AddRow("", "REF", reffie.storedData[0].symbol.symid, reffie.storedData[1].symbol.symid, addThis.symid, comment);
+                if (firstRowComment)
+                {
+                    commentRow = quad.GetBotRow(); // sets the first operations in the Statement, this is where our comment should start
+                    firstRowComment = false;
+                }
+                reffie.symbol = addThis;
+                stack.Push(reffie);
+                foundRef = true;
                 return;
             }
             foreach (KeyValuePair<string, Symbol> symbol in symbolHashSet)
@@ -1069,6 +1101,17 @@ namespace Compiler
                                 else if (rightSide.xId[0] == 'T' && leftSide.xId[0] == 'T')
                                 {
                                     genInvalidOp(sOp.token.lineNum, leftSide.symbol.data[0][1], leftSide.symbol.symid, sOp.token.lexeme, rightSide.symbol.data[0][1], rightSide.symbol.symid);
+                                }
+                                if (leftSide is SARref)
+                                {
+                                    genInvalidOp(sOp.token.lineNum, leftSide.symbol.data[0][1], leftSide.symbol.symid, sOp.token.lexeme, rightSide.symbol.data[0][1], rightSide.symbol.lexeme);
+                                } else if (rightSide is SARref)
+                                {
+                                    genInvalidOp(sOp.token.lineNum, leftSide.symbol.data[0][1], leftSide.symbol.symid, sOp.token.lexeme, rightSide.symbol.data[0][1], rightSide.symbol.lexeme);
+                                }
+                                else if (leftSide is SARref && rightSide is SARref) 
+                                {
+                                    genInvalidOp(sOp.token.lineNum, leftSide.symbol.data[0][1], leftSide.symbol.symid, sOp.token.lexeme, rightSide.symbol.data[0][1], rightSide.xId);
                                 }
                                 genInvalidOp(sOp.token.lineNum, leftSide.symbol.data[0][1], leftSide.symbol.lexeme, sOp.token.lexeme, rightSide.symbol.data[0][1], rightSide.symbol.lexeme);
                             }
@@ -2796,16 +2839,18 @@ namespace Compiler
             quad.labelCounter++;
 
 
-            if (expresisonRes.symbol.data[0][1] != "bool")
-            {
-                genSAMErrorIF(_lineNum, expresisonRes.symbol.data[0][1]);
-            }
+
 
             string[] scopeVer = scope.Split(".");
 
             if (scopeVer[scopeVer.Length - 1] == expresisonRes.symbol.lexeme)
             {
                 genSAMErrorIF(_lineNum, "null");
+            }
+
+            if (expresisonRes.symbol.data[0][1] != "bool")
+            {
+                genSAMErrorIF(_lineNum, expresisonRes.symbol.data[0][1]);
             }
 
 
@@ -2837,6 +2882,10 @@ namespace Compiler
 
             if (whileAssign) 
             {
+                if (whileAssign) 
+                {
+                    genSAMErrorWHILE(_lineNum, "null");
+                }
                 genSAMErrorWHILE(_lineNum, typeCheck.symbol.data[0][1]);
             }
             if (row[0].ToString() == "")
@@ -2910,8 +2959,15 @@ namespace Compiler
                     Console.WriteLine(s);
                     System.Environment.Exit(-1);
                 }
-                s += " not defined in class ";
-                s += scoper[1];
+                if (incomingMemberRef) 
+                {
+                    s += " not defined in class ";
+                    s += scoper[1];
+                }
+                else
+                {
+                    s += " not defined";
+                }
                 Console.WriteLine(s);
                 System.Environment.Exit(-1);
                 System.Environment.Exit(-1);
@@ -2972,7 +3028,7 @@ namespace Compiler
                 s += ")";
 
                 string[] scoper = scope.Split(".");
-                if (scoper[1] == "main")
+                if (scoper[1] == "main" || !incomingMemberRef)
                 {
                     s += " not defined";
                     Console.WriteLine(s);
@@ -2993,8 +3049,15 @@ namespace Compiler
                 }
             }
             s += ")";
-            s += " not defined in class ";
-            s += scope;
+            if (incomingMemberRef)
+            {
+                s += " not defined in class ";
+                s += scope;
+            }
+            else 
+            {
+                s += " not defined";
+            }
             Console.WriteLine(s);
             System.Environment.Exit(-1);
         }
